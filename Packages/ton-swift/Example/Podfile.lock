@@ -1,0 +1,31 @@
+PODS:
+  - BigInt (5.2.0)
+  - TonSwift (0.0.1):
+    - BigInt
+    - TweetNacl
+  - TonSwift/Tests (0.0.1):
+    - BigInt
+    - TweetNacl
+  - TweetNacl (1.0.2)
+
+DEPENDENCIES:
+  - TonSwift (from `../`)
+  - TonSwift/Tests (from `../`)
+
+SPEC REPOS:
+  trunk:
+    - BigInt
+    - TweetNacl
+
+EXTERNAL SOURCES:
+  TonSwift:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  BigInt: f668a80089607f521586bbe29513d708491ef2f7
+  TonSwift: 72bbfc1d924a4eebac87c8651afea7d2323771c6
+  TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
+
+PODFILE CHECKSUM: 4414c00005d2c10cd52b412b3080f767ee316ec4
+
+COCOAPODS: 1.12.0
