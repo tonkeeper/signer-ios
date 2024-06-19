@@ -72,14 +72,11 @@ final class EnterPasswordPasswordInputViewModelConfigurator: PasswordInputViewMo
     nil
   }
   private let mnemonicsRepository: MnemonicsRepository
-  private let oldMnemonicRepository: MnemonicsRepository
   let title: String
   
   init(mnemonicsRepository: MnemonicsRepository,
-       oldMnemonicRepository: MnemonicsRepository,
        title: String) {
     self.mnemonicsRepository = mnemonicsRepository
-    self.oldMnemonicRepository = oldMnemonicRepository
     self.title = title
   }
   
@@ -91,10 +88,7 @@ final class EnterPasswordPasswordInputViewModelConfigurator: PasswordInputViewMo
   
   func validateInput(_ input: String) async -> Bool {
     var isValid = await mnemonicsRepository.checkIfPasswordValid(input)
-    if !isValid {
-      isValid = await oldMnemonicRepository.checkIfPasswordValid(input)
-    }
-
+  
     if !isValid {
       await UINotificationFeedbackGenerator().notificationOccurred(.error)
     }

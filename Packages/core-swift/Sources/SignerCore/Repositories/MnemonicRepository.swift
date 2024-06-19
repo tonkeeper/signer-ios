@@ -14,42 +14,6 @@ public protocol MnemonicsRepository {
   func deleteAll() async throws
 }
 
-extension MnemonicsV2Vault: MnemonicsRepository {
-  public func getMnemonic(walletKey: WalletKey, 
-                          password: String) throws -> Mnemonic {
-    try loadMnemonic(
-      key: walletKey.publicKey.hexString,
-      password: password
-    )
-  }
-  
-  public func saveMnemonic(_ mnemonic: Mnemonic, 
-                           walletKey: WalletKey,
-                           password: String) throws {
-    try saveMnemonic(
-      mnemonic,
-      key: walletKey.publicKey.hexString,
-      password: password
-    )
-  }
-  
-  public func deleteMnemonic(walletKey: WalletKey, password: String) throws {
-    try deleteMnemonic(
-      key: walletKey.publicKey.hexString,
-      password: password
-    )
-  }
-  
-  public func checkIfPasswordValid(_ password: String) -> Bool {
-    do {
-      try self.validatePassword(password)
-      return true
-    } catch {
-      return false
-    }
-  }
-}
-
 extension MnemonicsV3Vault: MnemonicsRepository {
   public func getMnemonic(walletKey: WalletKey, password: String) async throws -> CoreComponents.Mnemonic {
     try await getMnemonic(identifier: walletKey.publicKey.hexString, password: password)

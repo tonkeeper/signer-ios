@@ -141,6 +141,14 @@
 		7D2D12F72BFCAF730061BBD3 /* EmulateQRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulateQRCodeView.swift; sourceTree = "<group>"; };
 		7D2D12F82BFCAF730061BBD3 /* EmulateQRCodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulateQRCodeViewModel.swift; sourceTree = "<group>"; };
 		7D2D12F92BFCAF730061BBD3 /* EmulateQRCodeAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulateQRCodeAssembly.swift; sourceTree = "<group>"; };
+		7DCC031B2C22EBB300ACEA93 /* ton-swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "ton-swift"; path = "Packages/ton-swift"; sourceTree = "<group>"; };
+		7DCC031C2C22EBB300ACEA93 /* core-swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "core-swift"; path = "Packages/core-swift"; sourceTree = "<group>"; };
+		7DCC031D2C22EBB300ACEA93 /* TKScreenKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = TKScreenKit; path = Packages/TKScreenKit; sourceTree = "<group>"; };
+		7DCC031E2C22EBB300ACEA93 /* TKUIKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = TKUIKit; path = Packages/TKUIKit; sourceTree = "<group>"; };
+		7DCC031F2C22EBB300ACEA93 /* TKCoordinator */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = TKCoordinator; path = Packages/TKCoordinator; sourceTree = "<group>"; };
+		7DCC03202C22EBB300ACEA93 /* SignerLocalize */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SignerLocalize; path = Packages/SignerLocalize; sourceTree = "<group>"; };
+		7DCC03212C22EBB300ACEA93 /* TKQRCode */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = TKQRCode; path = Packages/TKQRCode; sourceTree = "<group>"; };
+		7DCC03222C22EBB300ACEA93 /* TKCryptoSwift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = TKCryptoSwift; path = Packages/TKCryptoSwift; sourceTree = "<group>"; };
 		C30B6CA82BE4DEBF00737397 /* NoCameraPermissionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoCameraPermissionView.swift; sourceTree = "<group>"; };
 		C30B6CA92BE4DEBF00737397 /* QRScannerSwipeDownButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRScannerSwipeDownButton.swift; sourceTree = "<group>"; };
 		C30B6CAA2BE4DEBF00737397 /* ToggleButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToggleButton.swift; sourceTree = "<group>"; };
@@ -270,6 +278,21 @@
 				7D2D12F72BFCAF730061BBD3 /* EmulateQRCodeView.swift */,
 			);
 			path = EmulateQRCode;
+			sourceTree = "<group>";
+		};
+		7DCC031A2C22EBA800ACEA93 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				7DCC031C2C22EBB300ACEA93 /* core-swift */,
+				7DCC03202C22EBB300ACEA93 /* SignerLocalize */,
+				7DCC031F2C22EBB300ACEA93 /* TKCoordinator */,
+				7DCC03222C22EBB300ACEA93 /* TKCryptoSwift */,
+				7DCC03212C22EBB300ACEA93 /* TKQRCode */,
+				7DCC031D2C22EBB300ACEA93 /* TKScreenKit */,
+				7DCC031E2C22EBB300ACEA93 /* TKUIKit */,
+				7DCC031B2C22EBB300ACEA93 /* ton-swift */,
+			);
+			name = Packages;
 			sourceTree = "<group>";
 		};
 		C30B6CAB2BE4DEBF00737397 /* Views */ = {
@@ -759,6 +782,7 @@
 		C3E6DE4A2B1F40DB005AA291 = {
 			isa = PBXGroup;
 			children = (
+				7DCC031A2C22EBA800ACEA93 /* Packages */,
 				C3E6DE552B1F40DB005AA291 /* Signer */,
 				C3E6DE542B1F40DB005AA291 /* Products */,
 				C3E6DE9D2B20EA81005AA291 /* Frameworks */,

@@ -23,7 +23,6 @@ private extension ChangePasswordCoordinator {
   func openEnterCurrentPassword() {
     let configurator = EnterPasswordPasswordInputViewModelConfigurator(
       mnemonicsRepository: assembly.repositoriesAssembly.mnemonicsRepository(),
-      oldMnemonicRepository: assembly.repositoriesAssembly.oldMnemonicRepository(),
       title: SignerLocalize.Password.Change.EnterCurrent.title
     )
     let module = PasswordInputModuleAssembly.module(configurator: configurator)

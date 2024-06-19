@@ -6,10 +6,6 @@ public struct CoreAssembly {
     MnemonicVault(keychainVault: keychainVault, accessGroup: nil)
   }
   
-  func mnemonicsV2Vault(seedProvider: @escaping () -> String) -> MnemonicsV2Vault {
-    MnemonicsV2Vault(seedProvider: seedProvider, keychainVault: keychainVault, accessGroup: nil)
-  }
-  
   func mnemonicsV3Vault(seedProvider: @escaping () -> String) -> MnemonicsV3Vault {
     MnemonicsV3Vault(keychainVault: keychainVault, seedProvider: seedProvider)
   }

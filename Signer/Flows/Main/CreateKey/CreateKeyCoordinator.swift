@@ -40,7 +40,6 @@ private extension CreateKeyCoordinator {
   func openEnterPassword(name: String) {
     let configurator = EnterPasswordPasswordInputViewModelConfigurator(
       mnemonicsRepository: assembly.repositoriesAssembly.mnemonicsRepository(),
-      oldMnemonicRepository: assembly.repositoriesAssembly.oldMnemonicRepository(),
       title: SignerLocalize.Password.Confirmation.title
     )
     let module = PasswordInputModuleAssembly.module(configurator: configurator)
