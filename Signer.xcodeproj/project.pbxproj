@@ -17,6 +17,9 @@
 		7D5030802C22E5A4004991F0 /* TKScreenKit in Frameworks */ = {isa = PBXBuildFile; productRef = 7D50307F2C22E5A4004991F0 /* TKScreenKit */; };
 		7D537F0E2C22E5E100EB5AF3 /* TKCoordinator in Frameworks */ = {isa = PBXBuildFile; productRef = 7D537F0D2C22E5E100EB5AF3 /* TKCoordinator */; };
 		7D537F112C22E62200EB5AF3 /* SignerLocalize in Frameworks */ = {isa = PBXBuildFile; productRef = 7D537F102C22E62200EB5AF3 /* SignerLocalize */; };
+		7D8F680E2C248658005F581B /* NoSigningKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8F680C2C2484E9005F581B /* NoSigningKeyViewController.swift */; };
+		7D8F680F2C24865B005F581B /* NoSigningKeyAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8F680A2C2484E9005F581B /* NoSigningKeyAssembly.swift */; };
+		7D8F68102C24865D005F581B /* NoSigningKeyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8F680B2C2484E9005F581B /* NoSigningKeyViewModel.swift */; };
 		7DC1BA422C22E70B00D3986A /* SignerCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7DC1BA412C22E70B00D3986A /* SignerCore */; };
 		7DF283722BFD055700FA69DA /* TKQRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 7DF283712BFD055700FA69DA /* TKQRCode */; };
 		7DF283732BFD057400FA69DA /* TKQRCode in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 7DF283712BFD055700FA69DA /* TKQRCode */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -142,6 +145,9 @@
 		7D2D12F82BFCAF730061BBD3 /* EmulateQRCodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulateQRCodeViewModel.swift; sourceTree = "<group>"; };
 		7D2D12F92BFCAF730061BBD3 /* EmulateQRCodeAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulateQRCodeAssembly.swift; sourceTree = "<group>"; };
 		7D609F872C22EE6D00C92A45 /* Signer.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signer.xcconfig; sourceTree = "<group>"; };
+		7D8F680A2C2484E9005F581B /* NoSigningKeyAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoSigningKeyAssembly.swift; sourceTree = "<group>"; };
+		7D8F680B2C2484E9005F581B /* NoSigningKeyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoSigningKeyViewModel.swift; sourceTree = "<group>"; };
+		7D8F680C2C2484E9005F581B /* NoSigningKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoSigningKeyViewController.swift; sourceTree = "<group>"; };
 		7DCC031B2C22EBB300ACEA93 /* ton-swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "ton-swift"; path = "Packages/ton-swift"; sourceTree = "<group>"; };
 		7DCC031C2C22EBB300ACEA93 /* core-swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "core-swift"; path = "Packages/core-swift"; sourceTree = "<group>"; };
 		7DCC031D2C22EBB300ACEA93 /* TKScreenKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = TKScreenKit; path = Packages/TKScreenKit; sourceTree = "<group>"; };
@@ -287,6 +293,24 @@
 				7D609F872C22EE6D00C92A45 /* Signer.xcconfig */,
 			);
 			path = Configurations;
+			sourceTree = "<group>";
+		};
+		7D8F68082C2484B5005F581B /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				7D8F68092C2484DC005F581B /* NoSigningKey */,
+			);
+			path = Notification;
+			sourceTree = "<group>";
+		};
+		7D8F68092C2484DC005F581B /* NoSigningKey */ = {
+			isa = PBXGroup;
+			children = (
+				7D8F680A2C2484E9005F581B /* NoSigningKeyAssembly.swift */,
+				7D8F680C2C2484E9005F581B /* NoSigningKeyViewController.swift */,
+				7D8F680B2C2484E9005F581B /* NoSigningKeyViewModel.swift */,
+			);
+			path = NoSigningKey;
 			sourceTree = "<group>";
 		};
 		7DCC031A2C22EBA800ACEA93 /* Packages */ = {
@@ -828,6 +852,7 @@
 		C3E6DE972B20E9A1005AA291 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				7D8F68082C2484B5005F581B /* Notification */,
 				C30B6CBC2BE4EA4600737397 /* Sign */,
 				C30B6CB02BE4DEBF00737397 /* Scanner */,
 				C323954B2B2A1D5100C4F954 /* AddKey */,
@@ -966,6 +991,7 @@
 				C35434C52BE87229009FA8C0 /* SignConfirmationTransactionItemCommentView.swift in Sources */,
 				C3E6DE5B2B1F40DB005AA291 /* ViewController.swift in Sources */,
 				C30B6CB72BE4DEBF00737397 /* ScannerViewModel.swift in Sources */,
+				7D8F68102C24865D005F581B /* NoSigningKeyViewModel.swift in Sources */,
 				C30B6CB12BE4DEBF00737397 /* NoCameraPermissionView.swift in Sources */,
 				C30F68272BE52C4A00F1FC52 /* RecoveryPhraseDataProvider.swift in Sources */,
 				C30FD92A2B220A760045B58D /* PasswordInputModuleAssembly.swift in Sources */,
@@ -1013,10 +1039,12 @@
 				C35434C12BE8425C009FA8C0 /* SwipeControl.swift in Sources */,
 				C30B6CB52BE4DEBF00737397 /* ScannerView.swift in Sources */,
 				C34C44242B24C9B400D50343 /* MainViewButtonsBarView.swift in Sources */,
+				7D8F680E2C248658005F581B /* NoSigningKeyViewController.swift in Sources */,
 				C324BD792B2A869700BD83D1 /* CreateKeyCoordinator.swift in Sources */,
 				C35434D32BE8788F009FA8C0 /* FancyQRCodeView.swift in Sources */,
 				C323954F2B2A1D6000C4F954 /* AddKeyView.swift in Sources */,
 				C34C44472B27316300D50343 /* MainCollectionLayout.swift in Sources */,
+				7D8F680F2C24865B005F581B /* NoSigningKeyAssembly.swift in Sources */,
 				C35434BF2BE818FF009FA8C0 /* SignConfirmationBocView.swift in Sources */,
 				C376713F2BF18F27003CD9CB /* SettingsLiteItemsProvider.swift in Sources */,
 				C34C44782B27A7F600D50343 /* KeyDetailsViewController.swift in Sources */,

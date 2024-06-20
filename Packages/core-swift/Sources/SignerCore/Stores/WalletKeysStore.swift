@@ -43,6 +43,10 @@ public final class WalletKeysStore {
     }
   }
   
+  public func deleteAll() {
+    
+  }
+  
   private var observations = [UUID: ObservationClosure]()
   
   func addEventObserver<T: AnyObject>(_ observer: T,

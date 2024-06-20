@@ -3,6 +3,7 @@
 "actions.copy" = "Скопировать";
 "actions.save" = "Сохранить";
 "actions.paste" = "Вставить";
+"actions.ok" = "Хорошо";
 
 "toast.copied" = "Скопировано";
 "toast.password_changed" = "Пароль изменён";
@@ -96,3 +97,6 @@
 "sign_out.alert.title" = "Выйти?";
 "sign_out.alert.caption" = "Доступ к кошельку будет отключён. Убедитесь, что вы сохранили секретный ключ.";
 "sign_out.alert.button.sign_out" = "Выйти";
+
+"no_signing_key.title" = "Ключ для подписания отсутствует";
+"no_signing_key.caption" = "Добавьте необходимый ключ и повторите попытку.";

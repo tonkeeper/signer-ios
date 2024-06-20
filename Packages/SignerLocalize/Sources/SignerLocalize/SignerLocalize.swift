@@ -20,6 +20,10 @@ public enum SignerLocalize {
     public static var paste: String {
       localize("actions.paste")
     }
+    /// OK
+    public static var ok: String {
+      localize("actions.ok")
+    }
   }
   public enum Toast {
     /// Copied
@@ -411,6 +415,16 @@ public enum SignerLocalize {
           localize("sign_out.alert.button.sign_out")
         }
       }
+    }
+  }
+  public enum NoSigningKey {
+    /// No key for signing
+    public static var title: String {
+      localize("no_signing_key.title")
+    }
+    /// Add the necessary key and try again.
+    public static var caption: String {
+      localize("no_signing_key.caption")
     }
   }
 }

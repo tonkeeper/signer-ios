@@ -44,6 +44,25 @@ private extension EnterPasswordCoordinator {
     }
     module.view.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: singOutButton)
     
+    let iconImageView = UIImageView(image: UIImage(named: "top_bar_app_icon"))
+    iconImageView.contentMode = .center
+    
+    let iconView = UIView()
+    iconView.backgroundColor = .Background.content
+    iconView.layer.cornerRadius = 8
+    iconView.layer.masksToBounds = true
+    iconView.addSubview(iconImageView)
+    
+    iconImageView.snp.makeConstraints { make in
+      make.edges.equalTo(iconView)
+    }
+    iconView.snp.makeConstraints { make in
+      make.width.height.equalTo(32)
+    }
+    
+    
+    module.view.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: iconView)
+    
     router.push(viewController: module.view,
                 onPopClosures: {})
   }

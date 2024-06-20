@@ -21,7 +21,11 @@ public final class Assembly {
   }
   
   public func rootController() -> RootController {
-    RootController(walletKeysStore: storesAssembly.walletKeysStore)
+    RootController(
+      walletKeysStore: storesAssembly.walletKeysStore,
+      mnemonicsRepository: repositoriesAssembly.mnemonicsRepository(),
+      signerInfoRepository: repositoriesAssembly.signerInfoRepository()
+    )
   }
   
   public func mainController() -> MainController {

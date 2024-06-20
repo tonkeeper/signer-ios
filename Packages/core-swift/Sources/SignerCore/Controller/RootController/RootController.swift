@@ -9,9 +9,15 @@ public final class RootController {
   public var didUpdateState: ((State) -> Void)?
   
   private let walletKeysStore: WalletKeysStore
+  private let mnemonicsRepository: MnemonicsRepository
+  private let signerInfoRepository: SignerInfoRepository
   
-  init(walletKeysStore: WalletKeysStore) {
+  init(walletKeysStore: WalletKeysStore,
+       mnemonicsRepository: MnemonicsRepository,
+       signerInfoRepository: SignerInfoRepository) {
     self.walletKeysStore = walletKeysStore
+    self.mnemonicsRepository = mnemonicsRepository
+    self.signerInfoRepository = signerInfoRepository
   }
   
   public func start() {
@@ -31,5 +37,10 @@ public final class RootController {
     } else {
       return .main
     }
+  }
+  
+  public func logout() async {
+    try? await mnemonicsRepository.deleteAll()
+    try? signerInfoRepository.removeSignerInfo()
   }
 }

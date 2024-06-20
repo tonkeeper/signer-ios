@@ -3,6 +3,7 @@
 "actions.copy" = "Copy";
 "actions.save" = "Save";
 "actions.paste" = "Paste";
+"actions.ok" = "OK";
 
 "toast.copied" = "Copied";
 "toast.password_changed" = "Password changed";
@@ -96,3 +97,5 @@
 "sign_out.alert.caption" = "This will erase keys to the wallet. Make sure you have backed up your secret recovery phrase.";
 "sign_out.alert.button.sign_out" = "Sign Out";
 
+"no_signing_key.title" = "No key for signing";
+"no_signing_key.caption" = "Add the necessary key and try again.";

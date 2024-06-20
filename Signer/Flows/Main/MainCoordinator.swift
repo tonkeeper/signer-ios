@@ -211,12 +211,22 @@ private extension MainCoordinator {
           .storesAssembly
           .walletKeysStore
           .getWalletKeys().first(where: { $0.publicKey.data == model.publicKey.data }) else {
+          self.showNoSigningKey()
           return false
         }
         
         openSign(model: model, walletKey: walletKey, scanner: scanner)
         return true
       }
+    }
+  }
+  
+  func showNoSigningKey() {
+    let module = NoSigningKeyAssembly.module(signerCoreAssembly: signerCoreAssembly)
+    module.view.present(fromViewController: router.rootViewController)
+    
+    module.output.didTapClose = {
+      module.view.dismiss()
     }
   }
 }

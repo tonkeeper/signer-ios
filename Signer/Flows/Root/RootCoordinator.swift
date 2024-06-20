@@ -27,7 +27,7 @@ final class RootCoordinator: RouterCoordinator<NavigationControllerRouter> {
         openOnboarding()
       case .main:
         self.deeplink = deeplink
-        openMain(deeplink: deeplink)
+        openEnterPassword()
       }
     }
     handleState(state: rootController.getState())
@@ -83,6 +83,37 @@ private extension RootCoordinator {
     mainCoordinator.start(deeplink: deeplink)
     
     showViewController(navigationController, animated: true)
+  }
+  
+  func openEnterPassword() {
+    let navigationController = TKNavigationController()
+    navigationController.configureTransparentAppearance()
+    
+    let coordinator = EnterPasswordCoordinator(
+      router: NavigationControllerRouter(
+        rootViewController: navigationController
+      ),
+      assembly: signerCoreAssembly
+    )
+    
+    coordinator.didEnterPassword = { [weak self] _ in
+      self?.openMain(deeplink: self?.deeplink)
+    }
+    
+    coordinator.didSignOut = { [weak self] in
+      guard let self else { return }
+      Task {
+        await self.rootController.logout()
+        await MainActor.run {
+          self.start(deeplink: nil)
+        }
+      }
+    }
+    
+    addChild(coordinator)
+    coordinator.start()
+    
+    showViewController(navigationController, animated: false)
   }
   
   func showViewController(_ viewController: UIViewController, animated: Bool) {
