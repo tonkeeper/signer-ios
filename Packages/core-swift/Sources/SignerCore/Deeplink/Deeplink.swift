@@ -11,6 +11,7 @@ public struct TonSignModel {
   public let returnURL: String?
   public let version: String?
   public let network: String?
+  public let tonNetwork: TonNetwork?
 }
 
 public enum TonsignDeeplink {

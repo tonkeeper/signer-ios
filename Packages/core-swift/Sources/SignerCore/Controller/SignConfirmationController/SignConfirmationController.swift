@@ -46,6 +46,8 @@ public final class SignConfirmationController {
           valueSubtitle: nil,
           comment: nil
         )],
+        seqno: 0,
+        tonNetwork: nil,
         boc: model.body.hexString()
       )
     }
@@ -70,13 +72,17 @@ public final class SignConfirmationController {
     }
   }
   
-  public func createEmulationURL() -> URL? {
+  public func createEmulationURL(baseURLProvider: (TonNetwork) -> URL?, seqno: UInt64) -> URL? {
+    let tonNetwork = model.tonNetwork ?? .mainnet
     do {
       let contract: WalletContract
       switch model.version {
       case "v5r1":
-        // TODO: replace hardcoded networkId
-        contract = WalletV5R1(publicKey: model.publicKey.data, walletId: WalletId(networkGlobalId: -239, workchain: 0))
+        contract = WalletV5R1(
+          publicKey: model.publicKey.data, 
+          walletId: WalletId(networkGlobalId: Int32(tonNetwork.rawValue),
+                             workchain: 0)
+        )
       case "v4r2", nil:
         contract = WalletV4R2(publicKey: model.publicKey.data)
       case "v3r2":
@@ -95,12 +101,12 @@ public final class SignConfirmationController {
       try body.store(messageCell)
       let transferCell = try body.endCell()
       let externalMessage = Message.external(to: try contract.address(),
-                                             stateInit: contract.stateInit,
+                                             stateInit: seqno == 0 ? contract.stateInit : nil,
                                              body: transferCell)
       let cell = try Builder().store(externalMessage).endCell()
       let hexBoc = try cell.toBoc().hexString()
-      let urlString = "https://tonviewer.com/emulate/\(hexBoc)"
-      return URL(string: urlString)
+      let url = baseURLProvider(tonNetwork)?.appendingPathComponent(hexBoc)
+      return url
     } catch {
       return nil
     }
@@ -110,6 +116,8 @@ public final class SignConfirmationController {
     let cell = try Cell.cellFromBoc(src: boc)
     let hex = boc.hexString()
     let slice = try cell.toSlice()
+    try slice.skip(64)
+    let seqno = try slice.loadUint(bits: 32)
     var transactionItems = [TransactionItem]()
     while slice.remainingRefs > 0 {
       let messageCell = try slice.loadRef()
@@ -125,7 +133,7 @@ public final class SignConfirmationController {
         continue
       }
     }
-    return Transaction(boc: hex, items: transactionItems)
+    return Transaction(boc: hex, seqno: seqno, items: transactionItems)
   }
   
   private func parseMessage(info: CommonMsgInfoRelaxedInternal, bodyCell: Cell) throws -> TransactionItem {
@@ -219,6 +227,8 @@ public final class SignConfirmationController {
     }
     return TransactionModel(
       items: items,
+      seqno: transaction.seqno,
+      tonNetwork: model.tonNetwork,
       boc: transaction.boc
     )
   }
@@ -237,6 +247,7 @@ public final class SignConfirmationController {
   
   struct Transaction {
     let boc: String
+    let seqno: UInt64
     let items: [TransactionItem]
   }
 }

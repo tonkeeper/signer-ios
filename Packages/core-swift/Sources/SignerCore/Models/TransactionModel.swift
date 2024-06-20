@@ -10,5 +10,7 @@ public struct TransactionModel {
   }
   
   public let items: [Item]
+  public let seqno: UInt64
+  public let tonNetwork: TonNetwork?
   public let boc: String
 }

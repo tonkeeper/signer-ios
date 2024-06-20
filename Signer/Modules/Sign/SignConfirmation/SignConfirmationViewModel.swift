@@ -82,6 +82,15 @@ private extension SignConfirmationViewModelImplementation {
   }
   
   func createModel(transactionModel: SignerCore.TransactionModel) -> SignConfirmationView.Model {
+    let emulateUrlProvider: (TonNetwork) -> URL? = {
+      switch $0 {
+      case .mainnet:
+        InfoProvider.emulateMainnetURL()
+      case .testnet:
+        InfoProvider.emulateTestnetURL()
+      }
+    }
+    
     let transactionsModel = SignConfirmationTransactionsView.Model(
       actions: transactionModel.items.map {
         transactionAction in
@@ -123,7 +132,7 @@ private extension SignConfirmationViewModelImplementation {
     )
     emulateButtonConfiguration.content = TKButton.Configuration.Content(title: .plainString(SignerLocalize.SignTransaction.emulate))
     emulateButtonConfiguration.action = { [weak self] in
-      guard let url = self?.controller.createEmulationURL() else { return }
+      guard let url = self?.controller.createEmulationURL(baseURLProvider: emulateUrlProvider, seqno: transactionModel.seqno) else { return }
       self?.didOpenEmulateURL?(url)
     }
     
@@ -152,7 +161,7 @@ private extension SignConfirmationViewModelImplementation {
       icon: .TKUIKit.Icons.Size16.qrCode
     )
     emulateQRCodeButtonConfiguration.action = { [weak self] in
-      guard let url = self?.controller.createEmulationURL() else { return }
+      guard let url = self?.controller.createEmulationURL(baseURLProvider: emulateUrlProvider, seqno: transactionModel.seqno) else { return }
       self?.didOpenEmulateQRCode?(url)
     }
     

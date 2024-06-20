@@ -62,5 +62,9 @@
 	<string>$(TONKEEPER_APP_STORE_URL)</string>
 	<key>SignerAppStoreURL</key>
 	<string>$(SIGNER_APP_STORE_URL)</string>
+	<key>EmulateMainnetURL</key>
+	<string>$(EMULATE_MAINNET_URL)</string>
+	<key>EmulateTestnetURL</key>
+	<string>$(EMULATE_TESTNET_URL)</string>
 </dict>
 </plist>

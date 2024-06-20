@@ -18,3 +18,6 @@ TERMS_OF_SERVICE_URL = https:/$()/tonkeeper.com/terms
 PRIVACY_POLICY_URL = https:/$()/tonkeeper.com/privacy
 TONKEEPER_APP_STORE_URL = https:/$()/apps.apple.com/ru/app/tonkeeper-ton-wallet/id1587742107
 SIGNER_APP_STORE_URL = https:/$()/apps.apple.com/ru/app/signer-for-tonkeeper/id6502282812
+
+EMULATE_MAINNET_URL = https:/$()/tonviewer.com/emulate/
+EMULATE_TESTNET_URL = https:/$()/testnet.tonviewer.com/emulate/

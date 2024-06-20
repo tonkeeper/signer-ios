@@ -9,6 +9,8 @@ struct InfoProvider {
     case privacyPolicyURL = "PrivacyPolicyURL"
     case tonkeeperAppStoreURL = "TonkeeperAppStoreURL"
     case signerAppStoreURL = "SignerAppStoreURL"
+    case emulateMainnetURL = "EmulateMainnetURL"
+    case emulateTestnetURL = "EmulateTestnetURL"
   }
   
   static func value<T>(key: Keys) -> T? {
@@ -37,6 +39,16 @@ struct InfoProvider {
   
   static func signerAppStoreURL() -> URL? {
     guard let value: String = self.value(key: .signerAppStoreURL) else { return nil }
+    return URL(string: value)
+  }
+  
+  static func emulateMainnetURL() -> URL? {
+    guard let value: String = self.value(key: .emulateMainnetURL) else { return nil }
+    return URL(string: value)
+  }
+  
+  static func emulateTestnetURL() -> URL? {
+    guard let value: String = self.value(key: .emulateTestnetURL) else { return nil }
     return URL(string: value)
   }
   

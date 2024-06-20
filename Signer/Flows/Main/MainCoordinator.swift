@@ -40,6 +40,13 @@ final class MainCoordinator: RouterCoordinator<NavigationControllerRouter> {
       do {
         let deeplink = try mainController.parseDeeplink(deeplink: deeplink?.string)
         return handleCoreDeeplink(deeplink, scanner: false)
+      } catch DeeplinkParserError.unsopportedVersion {
+        if let presentingViewController = router.rootViewController.presentingViewController {
+          showUnsupportedVersion(fromViewController: presentingViewController)
+        } else {
+          showUnsupportedVersion(fromViewController: router.rootViewController)
+        }
+        return false
       } catch {
         return false
       }

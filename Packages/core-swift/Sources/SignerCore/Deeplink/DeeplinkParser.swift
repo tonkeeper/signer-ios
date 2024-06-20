@@ -65,6 +65,11 @@ public struct TonsignDeeplinkParser: DeeplinkParser {
       let returnURL = queryItems.first(where: { $0.name == "return" })?.value
       let version = queryItems.first(where: { $0.name == "v" })?.value
       let network = queryItems.first(where: { $0.name == "network" })?.value
+      let tonNetwork = queryItems
+        .first(where: { $0.name == "tn" })?
+        .value
+        .flatMap { Int16($0) }
+        .flatMap { TonNetwork(rawValue: $0) }
 
       return .tonsign(
         .sign(
@@ -73,7 +78,8 @@ public struct TonsignDeeplinkParser: DeeplinkParser {
             body: bodyData,
             returnURL: returnURL,
             version: version,
-            network: network
+            network: network,
+            tonNetwork: tonNetwork
           )
         )
       )
