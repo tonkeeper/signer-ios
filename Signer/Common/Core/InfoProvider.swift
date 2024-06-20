@@ -8,6 +8,7 @@ struct InfoProvider {
     case termsOfServiceURL = "TermsOfServiceURL"
     case privacyPolicyURL = "PrivacyPolicyURL"
     case tonkeeperAppStoreURL = "TonkeeperAppStoreURL"
+    case signerAppStoreURL = "SignerAppStoreURL"
   }
   
   static func value<T>(key: Keys) -> T? {
@@ -31,6 +32,11 @@ struct InfoProvider {
   
   static func tonkeeperAppStoreURL() -> URL? {
     guard let value: String = self.value(key: .tonkeeperAppStoreURL) else { return nil }
+    return URL(string: value)
+  }
+  
+  static func signerAppStoreURL() -> URL? {
+    guard let value: String = self.value(key: .signerAppStoreURL) else { return nil }
     return URL(string: value)
   }
   

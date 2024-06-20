@@ -60,5 +60,7 @@
 	<string>$(PRIVACY_POLICY_URL)</string>
 	<key>TonkeeperAppStoreURL</key>
 	<string>$(TONKEEPER_APP_STORE_URL)</string>
+	<key>SignerAppStoreURL</key>
+	<string>$(SIGNER_APP_STORE_URL)</string>
 </dict>
 </plist>

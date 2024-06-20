@@ -4,6 +4,8 @@
 "actions.save" = "Сохранить";
 "actions.paste" = "Вставить";
 "actions.ok" = "Хорошо";
+"actions.update" = "Обновить";
+"actions.later" = "Позже";
 
 "toast.copied" = "Скопировано";
 "toast.password_changed" = "Пароль изменён";
@@ -100,3 +102,6 @@
 
 "no_signing_key.title" = "Ключ для подписания отсутствует";
 "no_signing_key.caption" = "Добавьте необходимый ключ и повторите попытку.";
+
+"unsupported_version.title" = "Обновление Signer";
+"unsupported_version.caption" = "Новые параметры поддерживаются только в последней версии.";

@@ -24,6 +24,14 @@ public enum SignerLocalize {
     public static var ok: String {
       localize("actions.ok")
     }
+    /// Update
+    public static var update: String {
+      localize("actions.update")
+    }
+    /// Later
+    public static var later: String {
+      localize("actions.later")
+    }
   }
   public enum Toast {
     /// Copied
@@ -425,6 +433,16 @@ public enum SignerLocalize {
     /// Add the necessary key and try again.
     public static var caption: String {
       localize("no_signing_key.caption")
+    }
+  }
+  public enum UnsupportedVersion {
+    /// Update Signer
+    public static var title: String {
+      localize("unsupported_version.title")
+    }
+    /// New parameters are only supported in the latest version.
+    public static var caption: String {
+      localize("unsupported_version.caption")
     }
   }
 }

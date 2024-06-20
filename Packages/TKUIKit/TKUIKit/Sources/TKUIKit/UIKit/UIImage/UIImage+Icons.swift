@@ -220,6 +220,10 @@ public extension UIImage {
           .imageWithName("Icons/28/ic-signer-28")
           .withRenderingMode(.alwaysTemplate)
         }
+        public static var arrowDown: UIImage {
+          .imageWithName("Icons/28/ic-arrow-down-28")
+          .withRenderingMode(.alwaysTemplate)
+        }
       }
       public enum Size32 {
         public static var checkmarkCircle: UIImage {

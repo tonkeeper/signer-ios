@@ -4,6 +4,8 @@
 "actions.save" = "Save";
 "actions.paste" = "Paste";
 "actions.ok" = "OK";
+"actions.update" = "Update";
+"actions.later" = "Later";
 
 "toast.copied" = "Copied";
 "toast.password_changed" = "Password changed";
@@ -99,3 +101,6 @@
 
 "no_signing_key.title" = "No key for signing";
 "no_signing_key.caption" = "Add the necessary key and try again.";
+
+"unsupported_version.title" = "Update Signer";
+"unsupported_version.caption" = "New parameters are only supported in the latest version.";

@@ -6,6 +6,7 @@ import TonSwift
 
 protocol ScannerViewModuleOutput: AnyObject {
   var didScanDeeplink: ((Deeplink) -> Void)? { get set }
+  var didScanDeeplinkUnsupportedVersion: (() -> Void)? { get set }
 }
 
 protocol ScannerViewModel: AnyObject {
@@ -42,6 +43,7 @@ final class ScannerViewModelImplementation: NSObject, ScannerViewModel, ScannerV
   // MARK: - ScannerViewModuleOutput
   
   var didScanDeeplink: ((Deeplink) -> Void)?
+  var didScanDeeplinkUnsupportedVersion: (() -> Void)?
   
   // MARK: - ScannerViewModel
   
@@ -230,13 +232,18 @@ extension ScannerViewModelImplementation: AVCaptureMetadataOutputObjectsDelegate
     
     if scannerController.isQRCodeStartString(stringValue) {
       let qrCodeString = multiQRCode.fullString
-      if let deeplink = try? scannerController.handleScannedQRCode(qrCodeString) {
+      do {
+        let deeplink = try scannerController.handleScannedQRCode(qrCodeString)
         self.captureSession.stopRunning()
         UINotificationFeedbackGenerator().notificationOccurred(.warning)
         DispatchQueue.main.async {
           self.didScanDeeplink?(deeplink)
         }
-      } else {
+      } catch DeeplinkParserError.unsopportedVersion {
+        DispatchQueue.main.async {
+          self.didScanDeeplinkUnsupportedVersion?()
+        }
+      } catch {
         multiQRCode.reset()
       }
     }

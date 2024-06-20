@@ -1,9 +1,10 @@
 import Foundation
 import TonSwift
 
-enum DeeplinkParserError: Swift.Error {
+public enum DeeplinkParserError: Swift.Error {
   case unsupportedDeeplink(string: String?)
   case incorrectPublicKey(String)
+  case unsopportedVersion
 }
 
 public protocol DeeplinkParser {
@@ -20,11 +21,17 @@ public struct DefaultDeeplinkParser: DeeplinkParser {
   
   public func parse(string: String?) throws -> Deeplink {
     guard let string else { throw DeeplinkParserError.unsupportedDeeplink(string: string) }
-    let deeplink = parsers
-        .compactMap { handler -> Deeplink? in try? handler.parse(string: string) }
-        .first
-    guard let deeplink = deeplink else { throw DeeplinkParserError.unsupportedDeeplink(string: string) }
-    return deeplink
+    for parser in parsers {
+      do {
+        let deeplink = try parser.parse(string: string)
+        return deeplink
+      } catch DeeplinkParserError.unsopportedVersion {
+        throw DeeplinkParserError.unsopportedVersion
+      } catch {
+        continue
+      }
+    }
+    throw DeeplinkParserError.unsupportedDeeplink(string: string)
   }
 }
 
@@ -40,6 +47,11 @@ public struct TonsignDeeplinkParser: DeeplinkParser {
     case "tonsign":
       guard let queryItems = components.queryItems,
             !queryItems.isEmpty else { return .tonsign(.plain) }
+      
+      guard let host = components.host,
+            let _ = TonsignVersion(rawValue: host) else {
+        throw DeeplinkParserError.unsopportedVersion
+      }
       
       guard let pk = queryItems.first(where: { $0.name == "pk" })?.value,
             let publicKeyData = Data(hex: pk),
@@ -69,4 +81,8 @@ public struct TonsignDeeplinkParser: DeeplinkParser {
       throw DeeplinkParserError.unsupportedDeeplink(string: string)
     }
   }
+}
+
+enum TonsignVersion: String {
+  case v1
 }

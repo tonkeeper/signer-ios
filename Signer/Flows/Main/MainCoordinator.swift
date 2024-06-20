@@ -8,6 +8,8 @@ import CoreComponents
 
 final class MainCoordinator: RouterCoordinator<NavigationControllerRouter> {
   
+  private var isUnsupportedBottomSheetPresented = false
+  
   private let signerCoreAssembly: SignerCore.Assembly
   private let mainController: MainController
   
@@ -79,6 +81,11 @@ private extension MainCoordinator {
       self?.router.dismiss(completion: {
         _ = self?.handleCoreDeeplink(deeplink, scanner: true)
       })
+    }
+    
+    module.output.didScanDeeplinkUnsupportedVersion = { [weak self, weak viewController = module.view] in
+      guard let viewController else { return }
+      self?.showUnsupportedVersion(fromViewController: viewController)
     }
     
     let navigationController = TKNavigationController(rootViewController: module.view)
@@ -227,6 +234,30 @@ private extension MainCoordinator {
     
     module.output.didTapClose = {
       module.view.dismiss()
+    }
+  }
+  
+  func showUnsupportedVersion(fromViewController: UIViewController) {
+    guard !isUnsupportedBottomSheetPresented else { return }
+    isUnsupportedBottomSheetPresented = true
+    let module = UnsupportedVersionAssembly.module(signerCoreAssembly: signerCoreAssembly)
+    module.view.present(fromViewController: fromViewController)
+    module.view.didClose = { [weak self] _ in
+      self?.isUnsupportedBottomSheetPresented = false
+    }
+    module.output.didTapClose = { [weak self] in
+      module.view.dismiss {
+        self?.isUnsupportedBottomSheetPresented = false
+      }
+    }
+    module.output.didTapUpdate = { [weak self] in
+      module.view.dismiss {
+        self?.isUnsupportedBottomSheetPresented = false
+      }
+      guard let url = InfoProvider.signerAppStoreURL() else {
+        return
+      }
+      UIApplication.shared.open(url: url)
     }
   }
 }

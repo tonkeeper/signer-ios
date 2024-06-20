@@ -20,6 +20,10 @@
 		7D8F680E2C248658005F581B /* NoSigningKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8F680C2C2484E9005F581B /* NoSigningKeyViewController.swift */; };
 		7D8F680F2C24865B005F581B /* NoSigningKeyAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8F680A2C2484E9005F581B /* NoSigningKeyAssembly.swift */; };
 		7D8F68102C24865D005F581B /* NoSigningKeyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8F680B2C2484E9005F581B /* NoSigningKeyViewModel.swift */; };
+		7D8F68152C249E01005F581B /* UnsupportedVersionAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8F68132C249DD6005F581B /* UnsupportedVersionAssembly.swift */; };
+		7D8F68162C249E03005F581B /* UnsupportedVersionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8F68142C249DD6005F581B /* UnsupportedVersionViewController.swift */; };
+		7D8F68172C249E06005F581B /* UnsupportedVersionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8F68122C249DD5005F581B /* UnsupportedVersionViewModel.swift */; };
+		7D8F68192C24A249005F581B /* UnsupportedVersionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8F68182C24A249005F581B /* UnsupportedVersionHeaderView.swift */; };
 		7DC1BA422C22E70B00D3986A /* SignerCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7DC1BA412C22E70B00D3986A /* SignerCore */; };
 		7DF283722BFD055700FA69DA /* TKQRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 7DF283712BFD055700FA69DA /* TKQRCode */; };
 		7DF283732BFD057400FA69DA /* TKQRCode in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 7DF283712BFD055700FA69DA /* TKQRCode */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -148,6 +152,10 @@
 		7D8F680A2C2484E9005F581B /* NoSigningKeyAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoSigningKeyAssembly.swift; sourceTree = "<group>"; };
 		7D8F680B2C2484E9005F581B /* NoSigningKeyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoSigningKeyViewModel.swift; sourceTree = "<group>"; };
 		7D8F680C2C2484E9005F581B /* NoSigningKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoSigningKeyViewController.swift; sourceTree = "<group>"; };
+		7D8F68122C249DD5005F581B /* UnsupportedVersionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsupportedVersionViewModel.swift; sourceTree = "<group>"; };
+		7D8F68132C249DD6005F581B /* UnsupportedVersionAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsupportedVersionAssembly.swift; sourceTree = "<group>"; };
+		7D8F68142C249DD6005F581B /* UnsupportedVersionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsupportedVersionViewController.swift; sourceTree = "<group>"; };
+		7D8F68182C24A249005F581B /* UnsupportedVersionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsupportedVersionHeaderView.swift; sourceTree = "<group>"; };
 		7DCC031B2C22EBB300ACEA93 /* ton-swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "ton-swift"; path = "Packages/ton-swift"; sourceTree = "<group>"; };
 		7DCC031C2C22EBB300ACEA93 /* core-swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "core-swift"; path = "Packages/core-swift"; sourceTree = "<group>"; };
 		7DCC031D2C22EBB300ACEA93 /* TKScreenKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = TKScreenKit; path = Packages/TKScreenKit; sourceTree = "<group>"; };
@@ -298,6 +306,7 @@
 		7D8F68082C2484B5005F581B /* Notification */ = {
 			isa = PBXGroup;
 			children = (
+				7D8F68112C249DCA005F581B /* UnsupportedVersion */,
 				7D8F68092C2484DC005F581B /* NoSigningKey */,
 			);
 			path = Notification;
@@ -311,6 +320,17 @@
 				7D8F680B2C2484E9005F581B /* NoSigningKeyViewModel.swift */,
 			);
 			path = NoSigningKey;
+			sourceTree = "<group>";
+		};
+		7D8F68112C249DCA005F581B /* UnsupportedVersion */ = {
+			isa = PBXGroup;
+			children = (
+				7D8F68132C249DD6005F581B /* UnsupportedVersionAssembly.swift */,
+				7D8F68142C249DD6005F581B /* UnsupportedVersionViewController.swift */,
+				7D8F68122C249DD5005F581B /* UnsupportedVersionViewModel.swift */,
+				7D8F68182C24A249005F581B /* UnsupportedVersionHeaderView.swift */,
+			);
+			path = UnsupportedVersion;
 			sourceTree = "<group>";
 		};
 		7DCC031A2C22EBA800ACEA93 /* Packages */ = {
@@ -979,6 +999,7 @@
 				7D2D12FA2BFCB0040061BBD3 /* EmulateQRCodeViewController.swift in Sources */,
 				7D2D12FB2BFCB0040061BBD3 /* EmulateQRCodeView.swift in Sources */,
 				7D2D12FC2BFCB0040061BBD3 /* EmulateQRCodeAssembly.swift in Sources */,
+				7D8F68172C249E06005F581B /* UnsupportedVersionViewModel.swift in Sources */,
 				7D2D12FD2BFCB0040061BBD3 /* EmulateQRCodeViewModel.swift in Sources */,
 				C35434C72BE874DF009FA8C0 /* SignCoordinator.swift in Sources */,
 				C31614542BEFAB7800D70977 /* InfoProvider.swift in Sources */,
@@ -1002,6 +1023,7 @@
 				C30FD9592B223AA10045B58D /* EditWalletNameView.swift in Sources */,
 				C37671452BF192F7003CD9CB /* SettingsLegalItemsProvider.swift in Sources */,
 				C34C44A22B28CCFC00D50343 /* SettingsView.swift in Sources */,
+				7D8F68162C249E03005F581B /* UnsupportedVersionViewController.swift in Sources */,
 				C3E6DE572B1F40DB005AA291 /* AppDelegate.swift in Sources */,
 				C34C44262B24D20200D50343 /* MainViewModel.swift in Sources */,
 				C3E6DE592B1F40DB005AA291 /* SceneDelegate.swift in Sources */,
@@ -1038,9 +1060,11 @@
 				C323954D2B2A1D5B00C4F954 /* AddKeyViewController.swift in Sources */,
 				C35434C12BE8425C009FA8C0 /* SwipeControl.swift in Sources */,
 				C30B6CB52BE4DEBF00737397 /* ScannerView.swift in Sources */,
+				7D8F68152C249E01005F581B /* UnsupportedVersionAssembly.swift in Sources */,
 				C34C44242B24C9B400D50343 /* MainViewButtonsBarView.swift in Sources */,
 				7D8F680E2C248658005F581B /* NoSigningKeyViewController.swift in Sources */,
 				C324BD792B2A869700BD83D1 /* CreateKeyCoordinator.swift in Sources */,
+				7D8F68192C24A249005F581B /* UnsupportedVersionHeaderView.swift in Sources */,
 				C35434D32BE8788F009FA8C0 /* FancyQRCodeView.swift in Sources */,
 				C323954F2B2A1D6000C4F954 /* AddKeyView.swift in Sources */,
 				C34C44472B27316300D50343 /* MainCollectionLayout.swift in Sources */,
