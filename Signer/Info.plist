@@ -53,14 +53,12 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
 	<key>SupportURL</key>
-	<string>https://t.me/tonkeeper_supportbot</string>
-	<key>LegalURL</key>
-	<string></string>
+	<string>$(SUPPORT_URL)</string>
 	<key>TermsOfServiceURL</key>
-	<string>https://tonkeeper.com/terms</string>
+	<string>$(TERMS_OF_SERVICE_URL)</string>
 	<key>PrivacyPolicyURL</key>
-	<string>https://tonkeeper.com/privacy</string>
+	<string>$(PRIVACY_POLICY_URL)</string>
 	<key>TonkeeperAppStoreURL</key>
-	<string>https://apps.apple.com/ru/app/tonkeeper-ton-wallet/id1587742107</string>
+	<string>$(TONKEEPER_APP_STORE_URL)</string>
 </dict>
 </plist>
