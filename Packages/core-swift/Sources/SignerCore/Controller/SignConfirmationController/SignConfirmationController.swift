@@ -74,12 +74,19 @@ public final class SignConfirmationController {
   
   public func createEmulationURL(baseURLProvider: (TonNetwork) -> URL?, seqno: UInt64) -> URL? {
     let tonNetwork = model.tonNetwork ?? .mainnet
+    guard let hexBoc = createEmulationHexBoc(seqno: seqno) else { return nil }
+    let url = baseURLProvider(tonNetwork)?.appendingPathComponent(hexBoc)
+    return url
+  }
+  
+  public func createEmulationHexBoc(seqno: UInt64) -> String? {
+    let tonNetwork = model.tonNetwork ?? .mainnet
     do {
       let contract: WalletContract
       switch model.version {
       case "v5r1":
         contract = WalletV5R1(
-          publicKey: model.publicKey.data, 
+          publicKey: model.publicKey.data,
           walletId: WalletId(networkGlobalId: Int32(tonNetwork.rawValue),
                              workchain: 0)
         )
@@ -105,8 +112,7 @@ public final class SignConfirmationController {
                                              body: transferCell)
       let cell = try Builder().store(externalMessage).endCell()
       let hexBoc = try cell.toBoc().hexString()
-      let url = baseURLProvider(tonNetwork)?.appendingPathComponent(hexBoc)
-      return url
+      return hexBoc
     } catch {
       return nil
     }

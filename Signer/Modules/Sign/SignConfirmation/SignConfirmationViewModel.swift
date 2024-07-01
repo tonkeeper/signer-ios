@@ -143,7 +143,7 @@ private extension SignConfirmationViewModelImplementation {
     copyButtonConfiguration.content = TKButton.Configuration.Content(title: .plainString(SignerLocalize.SignTransaction.copy))
     copyButtonConfiguration.action = { [weak self] in
       guard let self else { return }
-      UIPasteboard.general.string = self.controller.hexBody
+      UIPasteboard.general.string = self.controller.createEmulationHexBoc(seqno: transactionModel.seqno)
       ToastPresenter.showToast(configuration: .Signer.copied)
     }
     
