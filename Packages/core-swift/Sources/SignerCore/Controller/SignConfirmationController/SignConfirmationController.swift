@@ -87,31 +87,41 @@ public final class SignConfirmationController {
   public func createEmulationHexBoc(seqno: UInt64) -> String? {
     let tonNetwork = model.tonNetwork ?? .mainnet
     do {
+      guard let version = model.version else {
+        return nil
+      }
       let contract: WalletContract
-      switch model.version {
+      let transferCell: Cell
+      switch version {
       case "v5r1":
         contract = WalletV5R1(
           publicKey: model.publicKey.data,
           walletId: WalletId(networkGlobalId: Int32(tonNetwork.rawValue),
                              workchain: 0)
         )
-      case "v4r2", nil:
+        transferCell = try createEmulationTransferCellV5(body: model.body)
+      case "v5beta":
+        contract = WalletV5Beta(
+          publicKey: model.publicKey.data,
+          walletId: WalletIdBeta(
+            networkGlobalId: Int32(tonNetwork.rawValue),
+            workchain: 0
+          )
+        )
+        transferCell = try createEmulationTransferCellV5(body: model.body)
+      case "v4r2":
         contract = WalletV4R2(publicKey: model.publicKey.data)
+        transferCell = try createEmulationTransferCell(body: model.body)
       case "v3r2":
         contract = try WalletV3(workchain: 0, publicKey: model.publicKey.data, revision: .r2)
+        transferCell = try createEmulationTransferCell(body: model.body)
       case "v3r1":
         contract = try WalletV3(workchain: 0, publicKey: model.publicKey.data, revision: .r1)
+        transferCell = try createEmulationTransferCell(body: model.body)
       default:
         return nil
       }
-
-      let signer = WalletTransferEmptyKeySigner()
-      let messageCell = try Cell.cellFromBoc(src: model.body).toBuilder()
-      let signature = try signer.signMessage(messageCell.endCell().hash())
-      let body = Builder()
-      try body.store(data: signature)
-      try body.store(messageCell)
-      let transferCell = try body.endCell()
+      
       let externalMessage = Message.external(to: try contract.address(),
                                              stateInit: seqno == 0 ? contract.stateInit : nil,
                                              body: transferCell)
@@ -121,6 +131,26 @@ public final class SignConfirmationController {
     } catch {
       return nil
     }
+  }
+  
+  private func createEmulationTransferCell(body: Data) throws -> Cell {
+    let signer = WalletTransferEmptyKeySigner()
+    let messageCell = try Cell.cellFromBoc(src: body).toBuilder()
+    let signature = try signer.signMessage(messageCell.endCell().hash())
+    let body = Builder()
+    try body.store(data: signature)
+    try body.store(messageCell)
+    return try body.endCell()
+  }
+  
+  private func createEmulationTransferCellV5(body: Data) throws -> Cell {
+    let signer = WalletTransferEmptyKeySigner()
+    let messageCell = try Cell.cellFromBoc(src: body).toBuilder()
+    let signature = try signer.signMessage(messageCell.endCell().hash())
+    let body = Builder()
+    try body.store(messageCell)
+    try body.store(data: signature)
+    return try body.endCell()
   }
   
   private func parseBocV5(_ boc: Data) throws -> Transaction {
