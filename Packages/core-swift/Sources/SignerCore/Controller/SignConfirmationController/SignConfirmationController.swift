@@ -34,7 +34,12 @@ public final class SignConfirmationController {
   
   public func getTransactionModel(sendTitle: String) -> TransactionModel {
     do {
-      let transaction = try parseBoc(model.body)
+      var transaction: Transaction
+      if model.version?.starts(with: "v5") == true {
+        transaction = try parseBocV5(model.body)
+      } else {
+        transaction = try parseBoc(model.body)
+      }
       let transactionModel = createTransactionModel(transaction, sendTitle: sendTitle)
       return transactionModel
     } catch {
@@ -82,31 +87,41 @@ public final class SignConfirmationController {
   public func createEmulationHexBoc(seqno: UInt64) -> String? {
     let tonNetwork = model.tonNetwork ?? .mainnet
     do {
+      guard let version = model.version else {
+        return nil
+      }
       let contract: WalletContract
-      switch model.version {
+      let transferCell: Cell
+      switch version {
       case "v5r1":
         contract = WalletV5R1(
           publicKey: model.publicKey.data,
           walletId: WalletId(networkGlobalId: Int32(tonNetwork.rawValue),
                              workchain: 0)
         )
-      case "v4r2", nil:
+        transferCell = try createEmulationTransferCellV5(body: model.body)
+      case "v5beta":
+        contract = WalletV5Beta(
+          publicKey: model.publicKey.data,
+          walletId: WalletIdBeta(
+            networkGlobalId: Int32(tonNetwork.rawValue),
+            workchain: 0
+          )
+        )
+        transferCell = try createEmulationTransferCellV5(body: model.body)
+      case "v4r2":
         contract = WalletV4R2(publicKey: model.publicKey.data)
+        transferCell = try createEmulationTransferCell(body: model.body)
       case "v3r2":
         contract = try WalletV3(workchain: 0, publicKey: model.publicKey.data, revision: .r2)
+        transferCell = try createEmulationTransferCell(body: model.body)
       case "v3r1":
         contract = try WalletV3(workchain: 0, publicKey: model.publicKey.data, revision: .r1)
+        transferCell = try createEmulationTransferCell(body: model.body)
       default:
         return nil
       }
-
-      let signer = WalletTransferEmptyKeySigner()
-      let messageCell = try Cell.cellFromBoc(src: model.body).toBuilder()
-      let signature = try signer.signMessage(messageCell.endCell().hash())
-      let body = Builder()
-      try body.store(data: signature)
-      try body.store(messageCell)
-      let transferCell = try body.endCell()
+      
       let externalMessage = Message.external(to: try contract.address(),
                                              stateInit: seqno == 0 ? contract.stateInit : nil,
                                              body: transferCell)
@@ -116,6 +131,57 @@ public final class SignConfirmationController {
     } catch {
       return nil
     }
+  }
+  
+  private func createEmulationTransferCell(body: Data) throws -> Cell {
+    let signer = WalletTransferEmptyKeySigner()
+    let messageCell = try Cell.cellFromBoc(src: body).toBuilder()
+    let signature = try signer.signMessage(messageCell.endCell().hash())
+    let body = Builder()
+    try body.store(data: signature)
+    try body.store(messageCell)
+    return try body.endCell()
+  }
+  
+  private func createEmulationTransferCellV5(body: Data) throws -> Cell {
+    let signer = WalletTransferEmptyKeySigner()
+    let messageCell = try Cell.cellFromBoc(src: body).toBuilder()
+    let signature = try signer.signMessage(messageCell.endCell().hash())
+    let body = Builder()
+    try body.store(messageCell)
+    try body.store(data: signature)
+    return try body.endCell()
+  }
+  
+  private func parseBocV5(_ boc: Data) throws -> Transaction {
+    let cell = try Cell.cellFromBoc(src: boc)
+    let hex = boc.hexString()
+    let slice = try cell.toSlice()
+    try slice.skip(64)
+    let seqno = try slice.loadUint(bits: 32)
+    try slice.skip(32) // tx time
+    var transactionItems = [TransactionItem]()
+    
+    var latestTx = try slice.loadRef().toSlice()
+    while latestTx.remainingRefs > 0 {
+      let currentTx = latestTx
+      latestTx = try currentTx.loadRef().toSlice()
+      let messageCell = try currentTx.loadRef().toSlice()
+      
+      let message: MessageRelaxed = try messageCell.loadType()
+      switch message.info {
+      case .internalInfo(let info):
+        guard let transactionItem = try? parseMessage(info: info, bodyCell: message.body) else {
+          continue
+        }
+        transactionItems.append(transactionItem)
+      case .externalOutInfo:
+        continue
+      }
+    }
+    return Transaction(boc: hex, seqno: seqno, items: transactionItems)
+
+
   }
   
   private func parseBoc(_ boc: Data) throws -> Transaction {
