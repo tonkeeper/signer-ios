@@ -60,7 +60,7 @@ final class SignConfirmationTransactionItemView: UIView, ConfigurableView {
     } else {
       commentSize = commentView.sizeThatFits(CGSize(width: contentViewWidth, height: 0))
     }
-    let height = contentSizeThatFits.height
+    let height = max(44, contentSizeThatFits.height)
     + commentSize.height
     + UIEdgeInsets.contentPadding.top
     + UIEdgeInsets.contentPadding.bottom
@@ -94,7 +94,7 @@ final class SignConfirmationTransactionItemView: UIView, ConfigurableView {
     
     let contentSizeThatFits = contentView.sizeThatFits(CGSize(width: contentViewWidth, height: 0))
     
-    contentView.frame = CGRect(x: contentViewX, y: 0, width: contentViewWidth, height: contentSizeThatFits.height)
+    contentView.frame = CGRect(x: contentViewX, y: 0, width: contentViewWidth, height: max(44, contentSizeThatFits.height))
 
     if !commentView.isHidden {
       commentView.frame = CGRect(

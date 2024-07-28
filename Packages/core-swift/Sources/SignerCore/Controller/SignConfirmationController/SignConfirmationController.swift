@@ -35,7 +35,15 @@ public final class SignConfirmationController {
   public func getTransactionModel(sendTitle: String) -> TransactionModel {
     do {
       var transaction: Transaction
-      if model.version?.starts(with: "v5") == true {
+      let version: ContractVersion = {
+        if let version = model.version,
+            let contractVersion = ContractVersion(rawValue: version) {
+          return contractVersion
+        } else {
+          return .currentVersion
+        }
+      }()
+      if version == .v5R1 || version == .v5Beta {
         transaction = try parseBocV5(model.body)
       } else {
         transaction = try parseBoc(model.body)
@@ -46,7 +54,7 @@ public final class SignConfirmationController {
       return TransactionModel(
         items: [TransactionModel.Item(
           title: "Unknown",
-          subtitle: " ",
+          subtitle: nil,
           value: nil,
           valueSubtitle: nil,
           comment: nil
@@ -87,20 +95,25 @@ public final class SignConfirmationController {
   public func createEmulationHexBoc(seqno: UInt64) -> String? {
     let tonNetwork = model.tonNetwork ?? .mainnet
     do {
-      guard let version = model.version else {
-        return nil
-      }
+      let version: ContractVersion = {
+        if let version = model.version,
+            let contractVersion = ContractVersion(rawValue: version) {
+          return contractVersion
+        } else {
+          return .currentVersion
+        }
+      }()
       let contract: WalletContract
       let transferCell: Cell
       switch version {
-      case "v5r1":
+      case .v5R1:
         contract = WalletV5R1(
           publicKey: model.publicKey.data,
           walletId: WalletId(networkGlobalId: Int32(tonNetwork.rawValue),
                              workchain: 0)
         )
         transferCell = try createEmulationTransferCellV5(body: model.body)
-      case "v5beta":
+      case .v5Beta:
         contract = WalletV5Beta(
           publicKey: model.publicKey.data,
           walletId: WalletIdBeta(
@@ -109,17 +122,18 @@ public final class SignConfirmationController {
           )
         )
         transferCell = try createEmulationTransferCellV5(body: model.body)
-      case "v4r2":
+      case .v4R2:
         contract = WalletV4R2(publicKey: model.publicKey.data)
         transferCell = try createEmulationTransferCell(body: model.body)
-      case "v3r2":
+      case .v4R1:
+        contract = WalletV4R1(publicKey: model.publicKey.data)
+        transferCell = try createEmulationTransferCell(body: model.body)
+      case .v3R2:
         contract = try WalletV3(workchain: 0, publicKey: model.publicKey.data, revision: .r2)
         transferCell = try createEmulationTransferCell(body: model.body)
-      case "v3r1":
+      case .v3R1:
         contract = try WalletV3(workchain: 0, publicKey: model.publicKey.data, revision: .r1)
         transferCell = try createEmulationTransferCell(body: model.body)
-      default:
-        return nil
       }
       
       let externalMessage = Message.external(to: try contract.address(),

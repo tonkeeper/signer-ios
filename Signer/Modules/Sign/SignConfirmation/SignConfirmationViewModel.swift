@@ -109,14 +109,15 @@ private extension SignConfirmationViewModelImplementation {
               leftItemConfiguration: TKUIListItemContentLeftItem.Configuration(
                 title: transactionAction.title.withTextStyle(.label1, color: .Text.primary),
                 tagViewModel: nil,
-                subtitle: transactionAction.subtitle.withTextStyle(.body2, color: .Text.secondary),
+                subtitle: transactionAction.subtitle?.withTextStyle(.body2, color: .Text.secondary),
                 description: nil
               ),
               rightItemConfiguration: TKUIListItemContentRightItem.Configuration(
                 value: transactionAction.value?.withTextStyle(.label1, color: .Text.primary),
                 subtitle: transactionAction.valueSubtitle?.withTextStyle(.body2, color: .Text.tertiary),
                 description: nil
-              )
+              ),
+              isVerticalCenter: true
             ),
             commentConfiguration: SignConfirmationTransactionItemCommentView.Model(
               comment: transactionAction.comment?.withTextStyle(.body2, color: .Text.primary)
