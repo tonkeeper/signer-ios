@@ -2,18 +2,18 @@ import UIKit
 import TKUIKit
 
 final class ScannerView: UIView {
-  
-  let videoContainerView = UIView()
-  let overlayView = UIView()
-  let flashlightButton = ToggleButton()
-  let titleLabel = UILabel()
-  let subtitleLabel = UILabel()
+
+  let previewView = ScannerPreviewView()
   let cameraPermissionViewContainer = UIView()
-  let holeRectView = UIView()
-  
-  private let maskLayer = CAShapeLayer()
-  private let cornersLayer = CAShapeLayer()
-  
+  let dimmingView = UIView()
+  let titleLabel = UILabel()
+  let captionLabel = UILabel()
+  let flashlightButton = ToggleButton()
+  private let labelsStackView = UIStackView()
+  private let viewFinderView = UIView()
+  private let viewFinderMaskLayer = CAShapeLayer()
+  private let viewFinderCornersLayer = CAShapeLayer()
+    
   override init(frame: CGRect) {
     super.init(frame: frame)
     setup()
@@ -25,94 +25,87 @@ final class ScannerView: UIView {
   
   override func layoutSubviews() {
     super.layoutSubviews()
-    videoContainerView.frame = bounds
-    videoContainerView.layer.sublayers?.forEach { $0.frame = bounds }
-    overlayView.frame = bounds
+    previewView.frame = bounds
+    cameraPermissionViewContainer.frame = bounds
+    dimmingView.frame = bounds
     
-    let holeRect = calculateHoleRect(bounds: bounds)
-    let holePath = holePath(bounds: bounds, holeRect: holeRect)
-    maskLayer.path = holePath.cgPath
+    let viewFinderRect = calculateViewFinderRect(bounds: bounds)
     
-    cornersLayer.frame = holeRect
-    cornersLayer.path = cornersPath(holeRect: holeRect)
+    viewFinderMaskLayer.path = createViewFinderBezierPath(bounds: bounds).cgPath
+    viewFinderMaskLayer.frame = bounds
+    
+    viewFinderCornersLayer.path = createCornersPath(
+      viewFinderRect: viewFinderRect
+    )
+    viewFinderMaskLayer.frame = bounds
+    
+    viewFinderView.frame = viewFinderRect
     
     let flashlightButtonFrame = CGRect(x: bounds.width/2 - .flashlightButtonSide/2,
-                                       y: holeRect.maxY + .flashlightButtonTopOffset,
+                                       y: viewFinderRect.maxY + .flashlightButtonTopOffset,
                                        width: .flashlightButtonSide,
                                        height: .flashlightButtonSide)
     flashlightButton.frame = flashlightButtonFrame
     flashlightButton.layer.cornerRadius = flashlightButtonFrame.height / 2
-    
-    holeRectView.frame = holeRect
-
-    cameraPermissionViewContainer.frame = bounds
-  }
-  
-  func setVideoPreviewLayer(_ layer: CALayer) {
-    videoContainerView.layer.insertSublayer(layer, at: 0)
-    layer.frame = videoContainerView.layer.bounds
   }
   
   func setCameraPermissionDeniedView(_ view: UIView) {
-    cameraPermissionViewContainer.isHidden = false
     cameraPermissionViewContainer.addSubview(view)
-    view.translatesAutoresizingMaskIntoConstraints = false
-    NSLayoutConstraint.activate([
-      view.topAnchor.constraint(equalTo: cameraPermissionViewContainer.topAnchor),
-      view.leftAnchor.constraint(equalTo: cameraPermissionViewContainer.leftAnchor),
-      view.bottomAnchor.constraint(equalTo: cameraPermissionViewContainer.bottomAnchor),
-      view.rightAnchor.constraint(equalTo: cameraPermissionViewContainer.rightAnchor),
-    ])
+    view.snp.makeConstraints { make in
+      make.edges.equalTo(cameraPermissionViewContainer)
+    }
   }
 }
 
 private extension ScannerView {
   func setup() {
-    subtitleLabel.numberOfLines = 0
-    subtitleLabel.alpha = 0.64
+    backgroundColor = .black
     
     cameraPermissionViewContainer.isHidden = true
-    addSubview(videoContainerView)
-    videoContainerView.addSubview(overlayView)
-    overlayView.addSubview(flashlightButton)
-    overlayView.addSubview(holeRectView)
     
-    let stackView = UIStackView()
-    stackView.axis = .vertical
-    stackView.spacing = 4
-    stackView.addArrangedSubview(titleLabel)
-    stackView.addArrangedSubview(subtitleLabel)
+    dimmingView.backgroundColor = .black.withAlphaComponent(0.72)
     
-    overlayView.addSubview(stackView)
+    viewFinderMaskLayer.fillColor = UIColor.orange.cgColor
+    viewFinderMaskLayer.fillRule = .evenOdd
+    dimmingView.layer.mask = viewFinderMaskLayer
     
-    layer.addSublayer(cornersLayer)
+    viewFinderCornersLayer.strokeColor = UIColor.white.cgColor
+    viewFinderCornersLayer.fillColor = UIColor.clear.cgColor
+    viewFinderCornersLayer.lineWidth = 3
+    viewFinderCornersLayer.lineCap = .round
+    dimmingView.layer.addSublayer(viewFinderCornersLayer)
     
-    addSubview(cameraPermissionViewContainer)
+    viewFinderView.layer.addSublayer(viewFinderCornersLayer)
     
-    backgroundColor = .black
-    overlayView.backgroundColor = .black.withAlphaComponent(0.72)
-    
-    cornersLayer.strokeColor = UIColor.white.cgColor
-    cornersLayer.fillColor = UIColor.clear.cgColor
-    cornersLayer.lineWidth = 3
-    cornersLayer.lineCap = .round
-    
-    maskLayer.fillRule = .evenOdd
-    overlayView.layer.mask = maskLayer
+    labelsStackView.axis = .vertical
+    labelsStackView.spacing = 4
+    titleLabel.numberOfLines = 0
+    captionLabel.numberOfLines = 0
+    captionLabel.alpha = 0.64
     
     setupFlashlightButton()
     
-    stackView.translatesAutoresizingMaskIntoConstraints = false
-    NSLayoutConstraint.activate([
-      stackView.bottomAnchor.constraint(equalTo: holeRectView.topAnchor, constant: -CGFloat.titleBottomOffset),
-      stackView.leftAnchor.constraint(equalTo: leftAnchor, constant: 32),
-      stackView.rightAnchor.constraint(equalTo: rightAnchor, constant: -32)
-    ])
+    addSubview(previewView)
+    addSubview(dimmingView)
+    addSubview(viewFinderView)
+    addSubview(labelsStackView)
+    addSubview(flashlightButton)
+    addSubview(cameraPermissionViewContainer)
+    
+    labelsStackView.addArrangedSubview(titleLabel)
+    labelsStackView.addArrangedSubview(captionLabel)
+    
+    labelsStackView.snp.makeConstraints { make in
+      make.bottom.equalTo(viewFinderView.snp.top).offset(-CGFloat.titleBottomOffset)
+      make.left.equalTo(self).offset(32)
+      make.right.equalTo(self).offset(-32)
+    }
   }
   
   func setupFlashlightButton() {
+    flashlightButton.isHidden = true
     flashlightButton.setBackgroundColor(
-      .Background.overlayLight,
+      .black.withAlphaComponent(0.48),
       for: .deselected
     )
     flashlightButton.setBackgroundColor(
@@ -124,14 +117,14 @@ private extension ScannerView {
       for: .deselected
     )
     flashlightButton.setTintColor(
-      .Icon.primaryAlternate,
+      .black,
       for: .selected
     )
     flashlightButton.setImage(.TKUIKit.Icons.Size56.flashlightOff,
                               for: .normal)
   }
   
-  func calculateHoleRect(bounds: CGRect) -> CGRect {
+  func calculateViewFinderRect(bounds: CGRect) -> CGRect {
     let side = bounds.width - (.holeSideOffset * 2)
     let x: CGFloat = .holeSideOffset
     let y: CGFloat = bounds.height/2 - side/2
@@ -140,30 +133,31 @@ private extension ScannerView {
     return rect
   }
   
-  func holePath(bounds: CGRect, holeRect: CGRect) -> UIBezierPath {
+  func createViewFinderBezierPath(bounds: CGRect) -> UIBezierPath {
     let path = UIBezierPath(rect: bounds)
-    path.append(.init(roundedRect: holeRect, cornerRadius: .cornerRadius))
+    path.append(UIBezierPath(roundedRect: calculateViewFinderRect(bounds: bounds),
+                             cornerRadius: .cornerRadius))
     return path
   }
-
-  func cornersPath(holeRect: CGRect) -> CGPath {
+  
+  func createCornersPath(viewFinderRect: CGRect) -> CGPath {
     let path = CGMutablePath()
     addCorner(path: path,
               start: .init(x: 0, y: .cornerSide),
               end: .init(x: .cornerSide, y: 0),
               corner: .init(x: 0, y: 0))
     addCorner(path: path,
-              start: .init(x: holeRect.width - .cornerSide, y: 0),
-              end: .init(x: holeRect.width, y: .cornerSide),
-              corner: .init(x: holeRect.width, y: 0))
+              start: .init(x: viewFinderRect.width - .cornerSide, y: 0),
+              end: .init(x: viewFinderRect.width, y: .cornerSide),
+              corner: .init(x: viewFinderRect.width, y: 0))
     addCorner(path: path,
-              start: .init(x: holeRect.width, y: holeRect.height - .cornerSide),
-              end: .init(x: holeRect.width - .cornerSide, y: holeRect.height),
-              corner: .init(x: holeRect.width, y: holeRect.height))
+              start: .init(x: viewFinderRect.width, y: viewFinderRect.height - .cornerSide),
+              end: .init(x: viewFinderRect.width - .cornerSide, y: viewFinderRect.height),
+              corner: .init(x: viewFinderRect.width, y: viewFinderRect.height))
     addCorner(path: path,
-              start: .init(x: .cornerSide, y: holeRect.height),
-              end: .init(x: 0, y: holeRect.height - .cornerSide),
-              corner: .init(x: 0, y: holeRect.height))
+              start: .init(x: .cornerSide, y: viewFinderRect.height),
+              end: .init(x: 0, y: viewFinderRect.height - .cornerSide),
+              corner: .init(x: 0, y: viewFinderRect.height))
     return path
   }
   

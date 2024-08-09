@@ -98,6 +98,10 @@ private extension MainCoordinator {
     let navigationController = TKNavigationController(rootViewController: module.view)
     navigationController.configureTransparentAppearance()
     
+    if ProcessInfo.processInfo.isiOSAppOnMac {
+      navigationController.modalPresentationStyle = .fullScreen
+    }
+    
     router.present(navigationController, animated: animated)
   }
   

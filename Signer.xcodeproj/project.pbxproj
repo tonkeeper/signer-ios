@@ -25,6 +25,7 @@
 		7D8F68172C249E06005F581B /* UnsupportedVersionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8F68122C249DD5005F581B /* UnsupportedVersionViewModel.swift */; };
 		7D8F68192C24A249005F581B /* UnsupportedVersionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8F68182C24A249005F581B /* UnsupportedVersionHeaderView.swift */; };
 		7DC1BA422C22E70B00D3986A /* SignerCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7DC1BA412C22E70B00D3986A /* SignerCore */; };
+		7DC47B242C66403F007F3A90 /* ScannerPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DC47B232C66403F007F3A90 /* ScannerPreviewView.swift */; };
 		7DF283722BFD055700FA69DA /* TKQRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 7DF283712BFD055700FA69DA /* TKQRCode */; };
 		7DF283732BFD057400FA69DA /* TKQRCode in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 7DF283712BFD055700FA69DA /* TKQRCode */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		C30B6CB12BE4DEBF00737397 /* NoCameraPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30B6CA82BE4DEBF00737397 /* NoCameraPermissionView.swift */; };
@@ -156,6 +157,7 @@
 		7D8F68132C249DD6005F581B /* UnsupportedVersionAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsupportedVersionAssembly.swift; sourceTree = "<group>"; };
 		7D8F68142C249DD6005F581B /* UnsupportedVersionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsupportedVersionViewController.swift; sourceTree = "<group>"; };
 		7D8F68182C24A249005F581B /* UnsupportedVersionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsupportedVersionHeaderView.swift; sourceTree = "<group>"; };
+		7DC47B232C66403F007F3A90 /* ScannerPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerPreviewView.swift; sourceTree = "<group>"; };
 		7DCC031B2C22EBB300ACEA93 /* ton-swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "ton-swift"; path = "Packages/ton-swift"; sourceTree = "<group>"; };
 		7DCC031C2C22EBB300ACEA93 /* core-swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "core-swift"; path = "Packages/core-swift"; sourceTree = "<group>"; };
 		7DCC031D2C22EBB300ACEA93 /* TKScreenKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = TKScreenKit; path = Packages/TKScreenKit; sourceTree = "<group>"; };
@@ -354,6 +356,7 @@
 				C30B6CA82BE4DEBF00737397 /* NoCameraPermissionView.swift */,
 				C30B6CA92BE4DEBF00737397 /* QRScannerSwipeDownButton.swift */,
 				C30B6CAA2BE4DEBF00737397 /* ToggleButton.swift */,
+				7DC47B232C66403F007F3A90 /* ScannerPreviewView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1074,6 +1077,7 @@
 				C34C44782B27A7F600D50343 /* KeyDetailsViewController.swift in Sources */,
 				C30FD8FE2B21F14C0045B58D /* Module.swift in Sources */,
 				C30FD9122B2204830045B58D /* AppCoordinator.swift in Sources */,
+				7DC47B242C66403F007F3A90 /* ScannerPreviewView.swift in Sources */,
 				C30FD95F2B223B580045B58D /* EditWalletNameModuleAssembly.swift in Sources */,
 				C30F68232BE523E800F1FC52 /* InputRecoveryPhraseSuggestsProvider.swift in Sources */,
 				C34C447A2B27A80000D50343 /* KeyDetailsView.swift in Sources */,
