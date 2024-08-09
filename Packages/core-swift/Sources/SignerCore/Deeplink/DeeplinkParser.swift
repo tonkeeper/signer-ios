@@ -36,6 +36,8 @@ public struct DefaultDeeplinkParser: DeeplinkParser {
 }
 
 public struct TonsignDeeplinkParser: DeeplinkParser {
+  public init() {}
+  
   public func parse(string: String?) throws -> Deeplink {
     guard let string else { throw DeeplinkParserError.unsupportedDeeplink(string: string) }
     guard let url = URL(string: string),

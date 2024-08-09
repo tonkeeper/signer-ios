@@ -10,13 +10,17 @@ protocol ScannerViewModuleOutput: AnyObject {
 }
 
 protocol ScannerViewModel: AnyObject {
-  
   var didUpdateTitle: ((NSAttributedString?) -> Void)? { get set }
   var didUpdateSubtitle: ((NSAttributedString?) -> Void)? { get set }
+  var didScanQRCode: (() -> Void)? { get set }
   
   func viewDidLoad()
   func didTapSettingsButton()
-  func didTapFlashlightButton(isToggled: Bool)
+  func didScanQRCodeString(_ qrCodeString: String)
+}
+
+enum ScannerError: Swift.Error {
+  case invalidBoc(String)
 }
 
 final class ScannerViewModelImplementation: NSObject, ScannerViewModel, ScannerViewModuleOutput {
@@ -25,6 +29,7 @@ final class ScannerViewModelImplementation: NSObject, ScannerViewModel, ScannerV
   
   var didScanDeeplink: ((Deeplink) -> Void)?
   var didScanDeeplinkUnsupportedVersion: (() -> Void)?
+  var didScanQRCode: (() -> Void)?
   
   // MARK: - ScannerViewModel
   
@@ -40,20 +45,33 @@ final class ScannerViewModelImplementation: NSObject, ScannerViewModel, ScannerV
     urlOpener.open(url: url)
   }
   
-  func didTapFlashlightButton(isToggled: Bool) {
-    guard let captureDevice = AVCaptureDevice.default(for: .video),
-          captureDevice.hasTorch
-    else { return }
-    
-    try? captureDevice.lockForConfiguration()
-    try? captureDevice.setTorchModeOn(level: 1)
-    captureDevice.torchMode = isToggled ? .on : .off
-    captureDevice.unlockForConfiguration()
+  func didScanQRCodeString(_ qrCodeString: String) {
+    if qrCodeString.hasPrefix(DeeplinkScheme.tonsign.rawValue) {
+      let fullString = multiQRCode.fullString
+      do {
+        let deeplink = try scannerController.handleScannedQRCode(qrCodeString)
+        didScanQRCode?()
+        UINotificationFeedbackGenerator().notificationOccurred(.warning)
+        DispatchQueue.main.async {
+          self.didScanDeeplink?(deeplink)
+        }
+      } catch DeeplinkParserError.unsopportedVersion {
+        DispatchQueue.main.async {
+          self.didScanDeeplinkUnsupportedVersion?()
+        }
+      } catch {
+        multiQRCode.reset()
+      }
+    }
+    multiQRCode.setNext(qrCodeString)
   }
 
   // MARK: - State
   
   private var multiQRCode = MultiQRCode()
+  private let deeplinkParser = DefaultDeeplinkParser(
+    parsers: [TonsignDeeplinkParser()]
+  )
   
   // MARK: - Dependencies
   
@@ -95,6 +113,32 @@ private extension ScannerViewModelImplementation {
       )
     )
   }
+  
+  private func handleScannedQRCode(_ qrCodeString: String) throws -> Deeplink {
+    do {
+      let deeplink = try deeplinkParser.parse(string: qrCodeString)
+      switch deeplink {
+      case .tonsign(let tonsignDeeplink):
+        switch tonsignDeeplink {
+        case .plain:
+          return deeplink
+        case .sign(let tonSignModel):
+          try validateBodyBoc(tonSignModel.body)
+          return deeplink
+        }
+      }
+    } catch {
+      throw error
+    }
+  }
+  
+  private func validateBodyBoc(_ boc: Data) throws {
+    do {
+      _ = try Cell.cellFromBoc(src: boc)
+    } catch {
+      throw ScannerError.invalidBoc(boc.hexString())
+    }
+  }
 }
 
 struct MultiQRCode {
@@ -116,3 +160,14 @@ struct MultiQRCode {
     chunksSet = []
   }
 }
+
+extension Cell {
+  static func cellFromBoc(src: Data) throws -> Cell {
+    let cells = try Cell.fromBoc(src: src)
+    guard cells.count == 1 else {
+      throw TonError.custom("Deserialized more than one cell")
+    }
+    return cells[0]
+  }
+}
+

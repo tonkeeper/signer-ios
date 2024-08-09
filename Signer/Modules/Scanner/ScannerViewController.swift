@@ -91,7 +91,7 @@ private extension ScannerViewController {
     customView.previewView.session = session
     
     customView.flashlightButton.didToggle = { [weak self] isToggled in
-      self?.viewModel.didTapFlashlightButton(isToggled: isToggled)
+      self?.toggleFlashlight(isOn: isToggled)
     }
     
     let swipeDownButton = QRScannerSwipeDownButton()
@@ -120,6 +120,14 @@ private extension ScannerViewController {
     
     viewModel.didUpdateSubtitle = { [weak customView] subtitle in
       customView?.captionLabel.attributedText = subtitle
+    }
+    
+    viewModel.didScanQRCode = { [weak self] in
+      guard let self else { return }
+      sessionQueue.async {
+        self.session.stopRunning()
+        self.isSessionRunning = self.session.isRunning
+      }
     }
   }
   
@@ -176,6 +184,16 @@ private extension ScannerViewController {
         }
       }
   }
+  
+  func toggleFlashlight(isOn: Bool) {
+    guard let device = device,
+          device.hasTorch else { return }
+    
+    try? device.lockForConfiguration()
+    try? device.setTorchModeOn(level: 1)
+    device.torchMode = isOn ? .on : .off
+    device.unlockForConfiguration()
+  }
 }
 
 extension ScannerViewController: AVCaptureMetadataOutputObjectsDelegate {
@@ -187,6 +205,6 @@ extension ScannerViewController: AVCaptureMetadataOutputObjectsDelegate {
           metadataObject.type == .qr,
           let stringValue = metadataObject.stringValue
     else { return }
-    print(stringValue)
+    viewModel.didScanQRCodeString(stringValue)
   }
 }
