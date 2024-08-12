@@ -46,10 +46,11 @@ final class ScannerViewModelImplementation: NSObject, ScannerViewModel, ScannerV
   }
   
   func didScanQRCodeString(_ qrCodeString: String) {
+    print(qrCodeString)
     if qrCodeString.hasPrefix(DeeplinkScheme.tonsign.rawValue) {
       let fullString = multiQRCode.fullString
       do {
-        let deeplink = try scannerController.handleScannedQRCode(qrCodeString)
+        let deeplink = try handleScannedQRCode(fullString)
         didScanQRCode?()
         UINotificationFeedbackGenerator().notificationOccurred(.warning)
         DispatchQueue.main.async {
@@ -76,18 +77,15 @@ final class ScannerViewModelImplementation: NSObject, ScannerViewModel, ScannerV
   // MARK: - Dependencies
   
   private let urlOpener: URLOpener
-  private let scannerController: ScannerController
   private let title: String?
   private let subtitle: String?
   
   // MARK: - Init
   
   init(urlOpener: URLOpener,
-       scannerController: ScannerController,
        title: String?,
        subtitle: String?) {
     self.urlOpener = urlOpener
-    self.scannerController = scannerController
     self.title = title
     self.subtitle = subtitle
   }

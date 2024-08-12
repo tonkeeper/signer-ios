@@ -9,7 +9,6 @@ struct ScannerAssembly {
                      subtitle: String? = nil) -> Module<ScannerViewController, ScannerViewModuleOutput, Void> {
     let viewModel = ScannerViewModelImplementation(
       urlOpener: urlOpener,
-      scannerController: signerCoreAssembly.scannerController(),
       title: title,
       subtitle: subtitle
     )

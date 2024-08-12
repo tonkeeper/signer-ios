@@ -68,10 +68,6 @@ public final class Assembly {
     )
   }
   
-  public func scannerController() -> ScannerController {
-    ScannerController()
-  }
-  
   public func signConfirmationController(model: TonSignModel, walletKey: WalletKey) -> SignConfirmationController {
     SignConfirmationController(
       model: model,
