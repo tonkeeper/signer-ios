@@ -16,6 +16,8 @@ final class PasswordInputViewController: GenericViewViewController<PasswordInput
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    customView.passwordTextField
+    
     setupBinding()
     viewModel.viewDidLoad()
   }
@@ -72,8 +74,11 @@ private extension PasswordInputViewController {
     viewModel.didMakeInputActive = { [customView] in
       customView.passwordTextField.becomeFirstResponder()
     }
-    customView.passwordTextField.didUpdateText = { [viewModel] input in
-      viewModel.didUpdateInput(input)
+    customView.passwordTextField.didUpdateText = { [weak viewModel] input in
+      viewModel?.didUpdateInput(input)
+    }
+    customView.passwordTextField.didPressReturn = { [weak viewModel] in
+      viewModel?.didPressReturn()
     }
   }
 }

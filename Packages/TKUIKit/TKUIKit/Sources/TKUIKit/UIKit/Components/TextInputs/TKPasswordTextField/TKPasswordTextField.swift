@@ -2,6 +2,8 @@ import UIKit
 
 public class TKPasswordTextField: TKTextField {
   
+  public var didPressReturn: (() -> Void)?
+  
   private var passwordText = "" {
     didSet {
       didUpdateText?(passwordText)
@@ -73,5 +75,10 @@ extension TKPasswordTextField: UITextFieldDelegate {
       textField.selectedTextRange = textField.textRange(from: newPosition, to: newPosition)
     }
     return false
+  }
+  
+  public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    didPressReturn?()
+    return true
   }
 }

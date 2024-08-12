@@ -103,4 +103,9 @@ extension EditWalletNameViewController: UITextFieldDelegate {
     
     return newString.count <= maxLength
   }
+  
+  func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    viewModel.didPressReturn()
+    return true
+  }
 }

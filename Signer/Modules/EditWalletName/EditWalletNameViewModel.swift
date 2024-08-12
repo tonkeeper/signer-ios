@@ -11,6 +11,7 @@ protocol EditWalletNameViewModel: AnyObject {
   
   func viewDidLoad()
   func didUpdateInput(_ input: String)
+  func didPressReturn()
 }
 
 protocol EditWalletNameModuleOutput: AnyObject {
@@ -53,12 +54,7 @@ final class EditWalletNameViewModelImplementation: EditWalletNameViewModel, Edit
     continueButtonConfiguration.content = TKButton.Configuration.Content(title: .plainString(configurator.continueButtonTitle))
     continueButtonConfiguration.action = { [weak self] in
       guard let self = self else { return }
-      Task {
-        await self.configurator.handleContinueButtonTapped()
-        await MainActor.run {
-          self.didEnterWalletName?(self.input)
-        }
-      }
+      self.handleContinue()
     }
     didUpdateContinueButton?(continueButtonConfiguration)
 
@@ -69,10 +65,23 @@ final class EditWalletNameViewModelImplementation: EditWalletNameViewModel, Edit
     self.input = input
     didUpdateIsContinueButtonEnabled?(isContinueEnable(input: input))
   }
+  
+  func didPressReturn() {
+    handleContinue()
+  }
 }
 
 private extension EditWalletNameViewModelImplementation {
   func isContinueEnable(input: String) -> Bool {
     !input.isEmpty
+  }
+  
+  func handleContinue() {
+    Task {
+      await self.configurator.handleContinueButtonTapped()
+      await MainActor.run {
+        self.didEnterWalletName?(self.input)
+      }
+    }
   }
 }

@@ -16,6 +16,7 @@ protocol PasswordInputViewModel: AnyObject {
   func viewWillAppear(isMovingToParent: Bool)
   func viewDidAppear()
   func didUpdateInput(_ input: String)
+  func didPressReturn()
 }
 
 protocol PasswordInputModuleOutput: AnyObject {
@@ -54,16 +55,7 @@ final class PasswordInputViewModelImplementation: PasswordInputViewModel, Passwo
     continueButtonConfiguration.content = TKButton.Configuration.Content(title: .plainString(SignerLocalize.Actions.continue_action))
     continueButtonConfiguration.action = { [weak self] in
       guard let self = self else { return }
-      Task {
-        let isValid = await self.configurator.validateInput(self.input.hashed)
-        await MainActor.run {
-          guard isValid else {
-            self.didUpdateIsValidInput?(isValid)
-            return
-          }
-          self.didEnterPassword?(self.input.hashed)
-        }
-      }
+      self.continueButtonAction()
     }
     didUpdateContinueButton?(continueButtonConfiguration)
     
@@ -86,5 +78,22 @@ final class PasswordInputViewModelImplementation: PasswordInputViewModel, Passwo
     self.input = input
     didUpdateIsContinueButtonEnabled?(configurator.isContinueEnable(input))
     didUpdateIsValidInput?(true)
+  }
+  
+  func didPressReturn() {
+    continueButtonAction()
+  }
+  
+  private func continueButtonAction() {
+    Task {
+      let isValid = await self.configurator.validateInput(self.input.hashed)
+      await MainActor.run {
+        guard isValid else {
+          self.didUpdateIsValidInput?(isValid)
+          return
+        }
+        self.didEnterPassword?(self.input.hashed)
+      }
+    }
   }
 }
