@@ -11,7 +11,8 @@ public final class TKRecoveryPhraseListView: UIView, ConfigurableView {
     
     let verticalItemsCount = max(leftColumnItemViews.count, rightColumnItemViews.count)
     let columnWidth = (bounds.width - .leftPaddig - .columnSpacing)/2
-    let verticalSpacing: CGFloat = CGFloat(verticalItemsCount - 1) * .itemSpacing
+    let itemSpacing: CGFloat = itemSpacing
+    let verticalSpacing: CGFloat = CGFloat(verticalItemsCount - 1) * itemSpacing
     let calculatedItemHeight = (bounds.height - .topPadding - verticalSpacing) / CGFloat(verticalItemsCount)
     let itemHeight = min(calculatedItemHeight, .maximumItemHeight)
     let itemResultHeight = (leftColumnItemViews + rightColumnItemViews).map {
@@ -32,7 +33,7 @@ public final class TKRecoveryPhraseListView: UIView, ConfigurableView {
           width: columnWidth,
           height: itemResultHeight
         )
-        itemY += itemResultHeight + .itemSpacing
+        itemY += itemResultHeight + itemSpacing
       }
     }
     
@@ -72,13 +73,19 @@ public final class TKRecoveryPhraseListView: UIView, ConfigurableView {
       rightColumnItemViews.append(view)
     }
   }
+  
+  private var itemSpacing: CGFloat {
+    bounds.height >= .tresholdHeight ? .bigItemSpacing : .smallItemSpacing
+  }
 }
 
 private extension CGFloat {
   static let topPadding: CGFloat = 16
   static let leftPaddig: CGFloat = 16
   static let columnSpacing: CGFloat = 16
-  static let itemSpacing: CGFloat = 8
   static let maximumItemHeight: CGFloat = 24
+  static let tresholdHeight: CGFloat = 344
+  static let bigItemSpacing: CGFloat = 8
+  static let smallItemSpacing: CGFloat = 6
 }
 
