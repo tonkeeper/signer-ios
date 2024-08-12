@@ -60,6 +60,11 @@ private extension SettingsCoordinator {
     coordinator.start()
     
     navigationController.modalPresentationStyle = .fullScreen
+    
+    if ProcessInfo.processInfo.isiOSAppOnMac {
+      navigationController.modalPresentationStyle = .fullScreen
+    }
+    
     router.present(navigationController)
   }
   

@@ -75,6 +75,10 @@ private extension KeyDetailsCoordinator {
     let navigationController = TKNavigationController(rootViewController: module.view)
     navigationController.configureTransparentAppearance()
     
+    if ProcessInfo.processInfo.isiOSAppOnMac {
+      navigationController.modalPresentationStyle = .fullScreen
+    }
+    
     router.present(navigationController)
   }
   
@@ -95,6 +99,7 @@ private extension KeyDetailsCoordinator {
     coordinator.start()
     
     navigationController.modalPresentationStyle = .fullScreen
+    
     router.present(navigationController)
   }
   
@@ -116,6 +121,10 @@ private extension KeyDetailsCoordinator {
     
     let navigationController = TKNavigationController(rootViewController: module.view)
     navigationController.configureTransparentAppearance()
+    
+    if ProcessInfo.processInfo.isiOSAppOnMac {
+      navigationController.modalPresentationStyle = .fullScreen
+    }
     
     fromViewController.present(navigationController, animated: true)
   }

@@ -168,6 +168,10 @@ private extension MainCoordinator {
     addChild(createKeyCoordinator)
     createKeyCoordinator.start()
     
+    if ProcessInfo.processInfo.isiOSAppOnMac {
+      navigationController.modalPresentationStyle = .fullScreen
+    }
+    
     router.present(navigationController)
   }
   
@@ -192,6 +196,10 @@ private extension MainCoordinator {
     
     addChild(createKeyCoordinator)
     createKeyCoordinator.start()
+    
+    if ProcessInfo.processInfo.isiOSAppOnMac {
+      navigationController.modalPresentationStyle = .fullScreen
+    }
     
     router.present(navigationController)
   }

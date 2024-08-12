@@ -127,6 +127,10 @@ private extension SignCoordinator {
     navigationController.configureTransparentAppearance()
     navigationController.modalTransitionStyle = .crossDissolve
     
+    if ProcessInfo.processInfo.isiOSAppOnMac {
+      navigationController.modalPresentationStyle = .fullScreen
+    }
+    
     fromViewController.present(navigationController, animated: true)
   }
   
