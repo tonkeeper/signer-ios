@@ -58,7 +58,7 @@ private extension RootCoordinator {
       router: .init(rootViewController: navigationController),
       signerCoreAssembly: signerCoreAssembly
     )
-    onboardingCoordinator.didCompleteOnboarding = { [weak self, unowned onboardingCoordinator] in
+    onboardingCoordinator.didCompleteOnboarding = { [weak self, weak onboardingCoordinator] in
       self?.removeChild(onboardingCoordinator)
       self?.openMain(deeplink: nil)
     }

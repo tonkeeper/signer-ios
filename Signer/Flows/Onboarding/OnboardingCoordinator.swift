@@ -45,10 +45,10 @@ private extension OnboardingCoordinator {
   
   func openCreate() {
     let createCoordinator = OnboardingCreateKeyCoordinator(router: router, assembly: signerCoreAssembly)
-    createCoordinator.didFinish = { [weak self, unowned createCoordinator] in
+    createCoordinator.didFinish = { [weak self, weak createCoordinator] in
       self?.removeChild(createCoordinator)
     }
-    createCoordinator.didCreateKey = { [weak self, unowned createCoordinator] in
+    createCoordinator.didCreateKey = { [weak self, weak createCoordinator] in
       self?.removeChild(createCoordinator)
       self?.didCompleteOnboarding?()
     }
@@ -59,11 +59,11 @@ private extension OnboardingCoordinator {
   
   func openImport() {
     let importCoordinator = OnboardingImportKeyCoordinator(router: router, assembly: signerCoreAssembly)
-    importCoordinator.didFinish = { [weak self, unowned importCoordinator] in
+    importCoordinator.didFinish = { [weak self, weak importCoordinator] in
       self?.removeChild(importCoordinator)
     }
     
-    importCoordinator.didImportKey = { [weak self, unowned importCoordinator] in
+    importCoordinator.didImportKey = { [weak self, weak importCoordinator] in
       self?.removeChild(importCoordinator)
       self?.didCompleteOnboarding?()
     }

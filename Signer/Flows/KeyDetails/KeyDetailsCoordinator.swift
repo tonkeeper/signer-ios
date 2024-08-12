@@ -91,7 +91,7 @@ private extension KeyDetailsCoordinator {
       assembly: signerCoreAssembly,
       walletKey: walletKey
     )
-    coordinator.didFinish = { [weak self, unowned coordinator] in
+    coordinator.didFinish = { [weak self, weak coordinator] in
       self?.removeChild(coordinator)
     }
     

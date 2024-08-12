@@ -125,7 +125,7 @@ private extension MainCoordinator {
   
   func openSettings() {
     let coordinator = SettingsCoordinator(router: router, signerCoreAssembly: signerCoreAssembly)
-    coordinator.didFinish = { [weak self, unowned coordinator] in
+    coordinator.didFinish = { [weak self, weak coordinator] in
       self?.removeChild(coordinator)
     }
     addChild(coordinator)
@@ -138,7 +138,7 @@ private extension MainCoordinator {
       signerCoreAssembly: signerCoreAssembly,
       walletKey: walletKey
     )
-    keyDetailsCoordinator.didFinish = { [weak self, unowned keyDetailsCoordinator] in
+    keyDetailsCoordinator.didFinish = { [weak self, weak keyDetailsCoordinator] in
       self?.removeChild(keyDetailsCoordinator)
     }
     
@@ -154,12 +154,12 @@ private extension MainCoordinator {
       router: NavigationControllerRouter(rootViewController: navigationController),
       assembly: signerCoreAssembly
     )
-    createKeyCoordinator.didFinish = { [weak self, unowned createKeyCoordinator] in
+    createKeyCoordinator.didFinish = { [weak self, weak createKeyCoordinator] in
       navigationController.dismiss(animated: true) {
         self?.removeChild(createKeyCoordinator)
       }
     }
-    createKeyCoordinator.didCreateKey = { [weak self, unowned createKeyCoordinator] in
+    createKeyCoordinator.didCreateKey = { [weak self, weak createKeyCoordinator] in
       navigationController.dismiss(animated: true) {
         self?.removeChild(createKeyCoordinator)
       }
@@ -183,12 +183,12 @@ private extension MainCoordinator {
       router: NavigationControllerRouter(rootViewController: navigationController),
       assembly: signerCoreAssembly
     )
-    createKeyCoordinator.didFinish = { [weak self, unowned createKeyCoordinator] in
+    createKeyCoordinator.didFinish = { [weak self, weak createKeyCoordinator] in
       navigationController.dismiss(animated: true) {
         self?.removeChild(createKeyCoordinator)
       }
     }
-    createKeyCoordinator.didImportKey = { [weak self, unowned createKeyCoordinator] in
+    createKeyCoordinator.didImportKey = { [weak self, weak createKeyCoordinator] in
       navigationController.dismiss(animated: true) {
         self?.removeChild(createKeyCoordinator)
       }

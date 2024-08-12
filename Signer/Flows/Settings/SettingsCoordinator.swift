@@ -50,7 +50,7 @@ private extension SettingsCoordinator {
       assembly: signerCoreAssembly
     )
     
-    coordinator.didFinish = { [weak self, unowned coordinator] in
+    coordinator.didFinish = { [weak self, weak coordinator] in
       self?.router.dismiss {
         self?.removeChild(coordinator)
       }
