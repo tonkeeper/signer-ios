@@ -20,7 +20,7 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>tonkeeper</string>
-		<string>tonkeeperx</string>
+		<string>tonkeeper-pro</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
