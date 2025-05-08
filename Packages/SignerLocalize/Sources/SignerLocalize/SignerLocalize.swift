@@ -165,6 +165,10 @@ public enum SignerLocalize {
       public static var export_to_tonkeeper: String {
         localize("key_details.buttons.export_to_tonkeeper")
       }
+      /// Link with Tonkeeper Pro
+      public static var export_to_tonkeeper_pro: String {
+        localize("key_details.buttons.export_to_tonkeeper_pro")
+      }
       /// Link with Tonkeeper Web
       public static var export_to_tonkeeper_web: String {
         localize("key_details.buttons.export_to_tonkeeper_web")
