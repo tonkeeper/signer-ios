@@ -2,11 +2,14 @@ import Foundation
 import TonSwift
 
 struct LinkDeeplinkGenerator {
-  func generateAppDeeplink(network: Network, key: WalletKey, local: Bool) -> URL? {
+  func generateAppDeeplink(tonkeeperApp: TonkeeperApp,
+                           network: Network,
+                           key: WalletKey,
+                           local: Bool) -> URL? {
     let hexPublicKey = key.publicKey.data.hexString()
 
     var components = URLComponents()
-    components.scheme = "tonkeeper"
+    components.scheme = tonkeeperApp.scheme
     components.host = "signer"
     components.path = "/link"
     components.queryItems = [

@@ -15,13 +15,26 @@
 			</array>
 		</dict>
 	</array>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
+	<key>EmulateMainnetURL</key>
+	<string>$(EMULATE_MAINNET_URL)</string>
+	<key>EmulateTestnetURL</key>
+	<string>$(EMULATE_TESTNET_URL)</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>tonkeeper</string>
+		<string>tonkeeper-mob</string>
 		<string>tonkeeper-pro</string>
 	</array>
+	<key>PrivacyPolicyURL</key>
+	<string>$(PRIVACY_POLICY_URL)</string>
+	<key>SignerAppStoreURL</key>
+	<string>$(SIGNER_APP_STORE_URL)</string>
+	<key>SupportURL</key>
+	<string>$(SUPPORT_URL)</string>
+	<key>TermsOfServiceURL</key>
+	<string>$(TERMS_OF_SERVICE_URL)</string>
+	<key>TonkeeperAppStoreURL</key>
+	<string>$(TONKEEPER_APP_STORE_URL)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -52,19 +65,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>SupportURL</key>
-	<string>$(SUPPORT_URL)</string>
-	<key>TermsOfServiceURL</key>
-	<string>$(TERMS_OF_SERVICE_URL)</string>
-	<key>PrivacyPolicyURL</key>
-	<string>$(PRIVACY_POLICY_URL)</string>
-	<key>TonkeeperAppStoreURL</key>
-	<string>$(TONKEEPER_APP_STORE_URL)</string>
-	<key>SignerAppStoreURL</key>
-	<string>$(SIGNER_APP_STORE_URL)</string>
-	<key>EmulateMainnetURL</key>
-	<string>$(EMULATE_MAINNET_URL)</string>
-	<key>EmulateTestnetURL</key>
-	<string>$(EMULATE_TESTNET_URL)</string>
 </dict>
 </plist>
