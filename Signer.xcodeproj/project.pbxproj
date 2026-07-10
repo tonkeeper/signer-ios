@@ -158,7 +158,6 @@
 		7D8F68142C249DD6005F581B /* UnsupportedVersionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsupportedVersionViewController.swift; sourceTree = "<group>"; };
 		7D8F68182C24A249005F581B /* UnsupportedVersionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsupportedVersionHeaderView.swift; sourceTree = "<group>"; };
 		7DC47B232C66403F007F3A90 /* ScannerPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerPreviewView.swift; sourceTree = "<group>"; };
-		7DCC031B2C22EBB300ACEA93 /* ton-swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "ton-swift"; path = "Packages/ton-swift"; sourceTree = "<group>"; };
 		7DCC031C2C22EBB300ACEA93 /* core-swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "core-swift"; path = "Packages/core-swift"; sourceTree = "<group>"; };
 		7DCC031D2C22EBB300ACEA93 /* TKScreenKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = TKScreenKit; path = Packages/TKScreenKit; sourceTree = "<group>"; };
 		7DCC031E2C22EBB300ACEA93 /* TKUIKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = TKUIKit; path = Packages/TKUIKit; sourceTree = "<group>"; };
@@ -345,7 +344,6 @@
 				7DCC03212C22EBB300ACEA93 /* TKQRCode */,
 				7DCC031D2C22EBB300ACEA93 /* TKScreenKit */,
 				7DCC031E2C22EBB300ACEA93 /* TKUIKit */,
-				7DCC031B2C22EBB300ACEA93 /* ton-swift */,
 			);
 			name = Packages;
 			sourceTree = "<group>";

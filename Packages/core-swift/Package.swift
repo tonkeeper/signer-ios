@@ -12,7 +12,7 @@ let package = Package(
   ],
   dependencies: [
     .package(path: "../TKCryptoSwift"),
-    .package(path: "../ton-swift")
+    .package(url: "https://github.com/tonkeeper/ton-swift", .upToNextMajor(from: "1.0.36"))
   ],
   targets: [
     .target(name: "CoreComponents",
