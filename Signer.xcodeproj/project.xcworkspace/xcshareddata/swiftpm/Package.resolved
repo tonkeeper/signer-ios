@@ -1,5 +1,4 @@
 {
-  "originHash" : "25559d4efc2ca03854013e783a0539f4c20e05eaf940b8fbc592e8eca6f31522",
   "pins" : [
     {
       "identity" : "bigint",
@@ -20,6 +19,24 @@
       }
     },
     {
+      "identity" : "swift-sodium",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jedisct1/swift-sodium",
+      "state" : {
+        "revision" : "4f9164a0a2c9a6a7ff53a2833d54a5c79c957342",
+        "version" : "0.9.1"
+      }
+    },
+    {
+      "identity" : "ton-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tonkeeper/ton-swift",
+      "state" : {
+        "revision" : "aacae64c40f40500a9485b6b2d8d060a4777cf72",
+        "version" : "1.0.36"
+      }
+    },
+    {
       "identity" : "tweetnacl-swiftwrap",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/bitmark-inc/tweetnacl-swiftwrap",
@@ -29,5 +46,5 @@
       }
     }
   ],
-  "version" : 3
+  "version" : 2
 }
