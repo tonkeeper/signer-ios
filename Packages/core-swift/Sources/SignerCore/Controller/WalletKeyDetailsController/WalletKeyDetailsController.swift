@@ -33,13 +33,24 @@ public final class WalletKeyDetailsController {
     didUpdateWalletKey?(walletKey)
   }
   
-  public func appLinkDeeplinkUrl(isLocal: Bool) -> URL? {
-    LinkDeeplinkGenerator().generateAppDeeplink(
-      network: .ton,
-      key: walletKey,
-      local: isLocal
-    )
+  public func appLinkDeeplinkURL(tonkeeperApp: TonkeeperApp,
+                                 isLocal: Bool) -> URL? {
+    LinkDeeplinkGenerator()
+      .generateAppDeeplink(
+        tonkeeperApp: tonkeeperApp,
+        network: .ton,
+        key: walletKey,
+        local: isLocal
+      )
   }
+  
+//  public func appLinkDeeplinkUrl(isLocal: Bool) -> URL? {
+//    LinkDeeplinkGenerator().generateAppDeeplink(
+//      network: .ton,
+//      key: walletKey,
+//      local: isLocal
+//    )
+//  }
   
   public func webLinkDeeplinkUrl() -> URL? {
     LinkDeeplinkGenerator().generateWebDeeplink(network: .ton, key: walletKey)

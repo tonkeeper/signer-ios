@@ -36,6 +36,7 @@
 "key_details.qr_header.title" = "Подключить на другом устройстве";
 "key_details.qr_header.caption" = "Откройте Tonkeeper » Добавить кошелёк » Подключить Signer";
 "key_details.buttons.export_to_tonkeeper" = "Подключить к Tonkeeper";
+"key_details.buttons.export_to_tonkeeper_pro" = "Подключить к Tonkeeper Pro";
 "key_details.buttons.export_to_tonkeeper_web" = "Подключить к Tonkeeper Web";
 "key_details.buttons.name" = "Имя";
 "key_details.buttons.hex_address" = "Hex адрес";

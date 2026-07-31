@@ -71,7 +71,7 @@ final class KeyDetailsViewModelImplementation: KeyDetailsViewModel, KeyDetailsMo
   }
   
   func generateQRCode(width: CGFloat) {
-    guard let url = keyDetailsController.appLinkDeeplinkUrl(isLocal: false) else { return }
+    guard let url = keyDetailsController.appLinkDeeplinkURL(tonkeeperApp: .standart, isLocal: false) else { return }
     self.qrCodeTask?.cancel()
     self.qrCodeTask = Task {
       do {
@@ -150,19 +150,63 @@ private extension KeyDetailsViewModelImplementation {
   }
   
   func createDeviceLinkSection() -> KeyDetailsSection {
-    KeyDetailsSection(
+    var items = [AnyHashable]()
+    let state = TonkeeperAppChecker.checkTonkeeperAppInstallState()
+    switch state {
+    case .none:
+      items.append(createTonkeeperInstallItem())
+    case .tonkeeper:
+      items.append(createTonkeeperItem(isTonkeeper: true))
+    case .mobile:
+      items.append(createTonkeeperItem(isTonkeeper: false))
+    case .pro:
+      items.append(createTonkeeperProItem())
+    case .mobileAndPro:
+      items.append(createTonkeeperItem(isTonkeeper: false))
+      items.append(createTonkeeperProItem())
+    }
+    
+    return KeyDetailsSection(
       type: .deviceLink,
-      items: [
-        createListItem(id: .linkToDeviceItemIdentifier,
-                       title: SignerLocalize.KeyDetails.Buttons.export_to_tonkeeper,
-                       subtitle: nil,
-                       image: .TKUIKit.Icons.Size16.chevronRight,
-                       tintColor: .Icon.tertiary,
-                       action: { [weak self] in
-                         self?.sameDeviceLinkAction()
-        })
-      ]
+      items: items
     )
+  }
+  
+  func createTonkeeperInstallItem() -> TKUIListItemCell.Configuration {
+    createListItem(id: .linkToDeviceItemIdentifier,
+                   title: SignerLocalize.KeyDetails.Buttons.export_to_tonkeeper,
+                   subtitle: nil,
+                   image: .TKUIKit.Icons.Size16.chevronRight,
+                   tintColor: .Icon.tertiary,
+                   action: { [weak self] in
+      self?.installTonkeeperAction()
+    })
+  }
+  
+  func createTonkeeperItem(isTonkeeper: Bool) -> TKUIListItemCell.Configuration {
+    createListItem(id: .linkToDeviceItemIdentifier,
+                   title: SignerLocalize.KeyDetails.Buttons.export_to_tonkeeper,
+                   subtitle: nil,
+                   image: .TKUIKit.Icons.Size16.chevronRight,
+                   tintColor: .Icon.tertiary,
+                   action: { [weak self] in
+      if isTonkeeper {
+        self?.linkToTonkeeperAction()
+      } else {
+        self?.linkToTonkeeperMobileAction()
+      }
+    })
+  }
+  
+  func createTonkeeperProItem() -> TKUIListItemCell.Configuration {
+    createListItem(id: .linkToDeviceItemIdentifier,
+                   title: SignerLocalize.KeyDetails.Buttons.export_to_tonkeeper_pro,
+                   subtitle: nil,
+                   image: .TKUIKit.Icons.Size16.chevronRight,
+                   tintColor: .Icon.tertiary,
+                   action: { [weak self] in
+      self?.linkToTonkeeperProAction()
+    })
   }
   
   func createWebLinkSection() -> KeyDetailsSection {
@@ -274,18 +318,42 @@ private extension KeyDetailsViewModelImplementation {
     )
   }
   
-  private func sameDeviceLinkAction() {
-    let completion: (Bool) -> Void = { [weak self] isConfirmed in
+  private func installTonkeeperAction() {
+    guard let appStoreUrl = InfoProvider.tonkeeperAppStoreURL() else { return }
+    self.didOpenUrl?(appStoreUrl)
+  }
+  
+  private func linkToTonkeeperAction() {
+    didRequireConfirmation? { [keyDetailsController] isConfirmed in
       guard isConfirmed else { return }
-      guard let self else { return }
-      guard let url = self.keyDetailsController.appLinkDeeplinkUrl(isLocal: true) else { return }
-      if self.canOpenUrl?(url) == true {
-        self.didOpenUrl?(url)
-      } else if let appStoreUrl = InfoProvider.tonkeeperAppStoreURL() {
-        self.didOpenUrl?(appStoreUrl)
-      }
+      guard let url = keyDetailsController.appLinkDeeplinkURL(
+        tonkeeperApp: .standart,
+        isLocal: true
+      ) else { return }
+      self.didOpenUrl?(url)
     }
-    didRequireConfirmation?(completion)
+  }
+  
+  private func linkToTonkeeperMobileAction() {
+    didRequireConfirmation? { [keyDetailsController] isConfirmed in
+      guard isConfirmed else { return }
+      guard let url = keyDetailsController.appLinkDeeplinkURL(
+        tonkeeperApp: .mobile,
+        isLocal: true
+      ) else { return }
+      self.didOpenUrl?(url)
+    }
+  }
+  
+  private func linkToTonkeeperProAction() {
+    didRequireConfirmation? { [keyDetailsController] isConfirmed in
+      guard isConfirmed else { return }
+      guard let url = keyDetailsController.appLinkDeeplinkURL(
+        tonkeeperApp: .pro,
+        isLocal: true
+      ) else { return }
+      self.didOpenUrl?(url)
+    }
   }
   
   private func webLinkAction() {
