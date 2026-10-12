@@ -86,6 +86,19 @@
 "sign_transaction.copy" = "Скопировать";
 "sign_transaction.slide_to_sign" = "Подписать";
 "sign_transaction.send" = "Отправить";
+"sign_transaction.unrecognized_title" = "Содержимое не распознано";
+"sign_transaction.unrecognized_warning" = "Запрос не удалось полностью распознать — он не будет подписан";
+"sign_transaction.set_extension_title" = "Установка расширения кошелька";
+"sign_transaction.remove_extension_title" = "Удаление расширения кошелька";
+"sign_transaction.enable_signature_title" = "Включение подписи ключом";
+"sign_transaction.disable_signature_title" = "Отключение подписи ключом";
+"sign_transaction.extension_warning" = "Даёт другому ключу полный контроль над кошельком";
+"sign_transaction.entire_balance" = "Весь баланс";
+"sign_transaction.destroy_warning" = "Контракт кошелька будет уничтожен";
+"sign_transaction.unknown_operation" = "Неизвестная операция";
+"sign_transaction.token_label" = "Токен";
+"sign_transaction.nft_label" = "NFT";
+"sign_transaction.excess_to" = "Сдача на";
 
 "emulate_transaction_qr.title" = "Отсканируйте, чтобы открыть эмуляцию транзакции";
 "emulate_transaction_qr.close_button.title" = "Закрыть";

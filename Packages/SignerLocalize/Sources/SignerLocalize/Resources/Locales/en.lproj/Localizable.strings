@@ -85,6 +85,19 @@
 "sign_transaction.copy" = "Copy";
 "sign_transaction.slide_to_sign" = "Slide to Sign";
 "sign_transaction.send" = "Send";
+"sign_transaction.unrecognized_title" = "Content not recognized";
+"sign_transaction.unrecognized_warning" = "This request can't be fully decoded and will not be signed";
+"sign_transaction.set_extension_title" = "Set wallet extension";
+"sign_transaction.remove_extension_title" = "Remove wallet extension";
+"sign_transaction.enable_signature_title" = "Enable signature auth";
+"sign_transaction.disable_signature_title" = "Disable signature auth";
+"sign_transaction.extension_warning" = "Grants full control of the wallet to another key";
+"sign_transaction.entire_balance" = "Entire balance";
+"sign_transaction.destroy_warning" = "Wallet contract will be destroyed";
+"sign_transaction.unknown_operation" = "Unknown operation";
+"sign_transaction.token_label" = "Token";
+"sign_transaction.nft_label" = "NFT";
+"sign_transaction.excess_to" = "Excess to";
 
 "emulate_transaction_qr.title" = "Scan the QR code to open the transaction emulation";
 "emulate_transaction_qr.close_button.title" = "Close";

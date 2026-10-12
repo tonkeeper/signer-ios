@@ -50,9 +50,6 @@ private extension SignConfirmationViewController {
       self?.didUpdateHeight?()
     }), for: .touchUpInside)
     
-    customView.swipeControl.didConfirm = { [weak viewModel] in
-      viewModel?.didConfirmTransaction()
-    }
   }
 
   func setupBindings() {

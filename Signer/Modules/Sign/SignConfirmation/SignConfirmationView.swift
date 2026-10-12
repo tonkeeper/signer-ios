@@ -31,11 +31,15 @@ final class SignConfirmationView: UIView, ConfigurableView {
     let transactionsModel: SignConfirmationTransactionsView.Model
     let bocModel: SignConfirmationBocView.Model
     let auditButtonText: String?
+    let confirmationAction: (() -> Void)?
   }
   
   func configure(model: Model) {
     transactionsView.configure(model: model.transactionsModel)
     bocView.configure(model: model.bocModel)
+
+    swipeControl.didConfirm = model.confirmationAction
+    swipeControl.isHidden = model.confirmationAction == nil
     
     auditButton.setAttributedTitle(
       model.auditButtonText?.withTextStyle(.body2, color: .Text.secondary), for: .normal
