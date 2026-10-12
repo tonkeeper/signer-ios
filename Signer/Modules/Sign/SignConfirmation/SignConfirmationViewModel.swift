@@ -18,7 +18,6 @@ protocol SignConfirmationViewModel: AnyObject {
   var didCancel: (() -> Void)? { get set }
   
   func viewDidLoad()
-  func didConfirmTransaction()
 }
 
 final class SignConfirmationViewModelImplementation: SignConfirmationViewModel, SignConfirmationModuleOutput {
@@ -35,23 +34,18 @@ final class SignConfirmationViewModelImplementation: SignConfirmationViewModel, 
   var didUpdateHeader: ((String, NSAttributedString?) -> Void)?
   var didUpdateModel: ((SignConfirmationView.Model) -> Void)?
   var didCancel: (() -> Void)?
-
-  private var canSign = false
   
   func viewDidLoad() {
     updateHeader()
     let transactionModel = controller.getTransactionModel(
       sendTitle: SignerLocalize.SignTransaction.send
     )
-    canSign = transactionModel.canSign
     let model = createModel(transactionModel: transactionModel)
     
     didUpdateModel?(model)
   }
   
-  func didConfirmTransaction() {
-    // "Not shown -> not signed": refuse to sign anything we could not fully decode.
-    guard canSign else { return }
+  private func confirmTransaction() {
     let completion: (String?) -> Void = { [weak self] password in
       guard let self else { return }
       if let password {
@@ -182,7 +176,9 @@ private extension SignConfirmationViewModelImplementation {
       transactionsModel: transactionsModel,
       bocModel: bocModel,
       auditButtonText: SignerLocalize.SignTransaction.audit_transaction,
-      isConfirmationEnabled: transactionModel.canSign
+      confirmationAction: transactionModel.canSign ? { [weak self] in
+        self?.confirmTransaction()
+      } : nil
     )
   }
 }
