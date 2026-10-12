@@ -31,11 +31,15 @@ final class SignConfirmationView: UIView, ConfigurableView {
     let transactionsModel: SignConfirmationTransactionsView.Model
     let bocModel: SignConfirmationBocView.Model
     let auditButtonText: String?
+    var isConfirmationEnabled: Bool = true
   }
   
   func configure(model: Model) {
     transactionsView.configure(model: model.transactionsModel)
     bocView.configure(model: model.bocModel)
+
+    // When the request could not be fully decoded we must not let the user sign it.
+    swipeControl.isHidden = !model.isConfirmationEnabled
     
     auditButton.setAttributedTitle(
       model.auditButtonText?.withTextStyle(.body2, color: .Text.secondary), for: .normal

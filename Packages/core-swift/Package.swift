@@ -12,6 +12,7 @@ let package = Package(
   ],
   dependencies: [
     .package(path: "../TKCryptoSwift"),
+    .package(path: "../SignerLocalize"),
     .package(url: "https://github.com/tonkeeper/ton-swift", .upToNextMajor(from: "1.0.36"))
   ],
   targets: [
@@ -27,8 +28,17 @@ let package = Package(
     .target(name: "SignerCore",
             dependencies: [
               .product(name: "TonSwift", package: "ton-swift"),
+              .product(name: "SignerLocalize", package: "SignerLocalize"),
               .target(name: "CoreComponents")
             ],
             path: "Sources/SignerCore"),
+    .testTarget(name: "SignerCoreTests",
+                dependencies: [
+                  "SignerCore",
+                  "CoreComponents",
+                  .product(name: "TonSwift", package: "ton-swift"),
+                  .product(name: "SignerLocalize", package: "SignerLocalize")
+                ],
+                path: "Tests/SignerCoreTests"),
   ]
 )

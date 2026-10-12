@@ -370,6 +370,58 @@ public enum SignerLocalize {
     public static var send: String {
       localize("sign_transaction.send")
     }
+    /// Content not recognized
+    public static var unrecognized_title: String {
+      localize("sign_transaction.unrecognized_title")
+    }
+    /// This request can't be fully decoded and will not be signed
+    public static var unrecognized_warning: String {
+      localize("sign_transaction.unrecognized_warning")
+    }
+    /// Set wallet extension
+    public static var set_extension_title: String {
+      localize("sign_transaction.set_extension_title")
+    }
+    /// Remove wallet extension
+    public static var remove_extension_title: String {
+      localize("sign_transaction.remove_extension_title")
+    }
+    /// Enable signature auth
+    public static var enable_signature_title: String {
+      localize("sign_transaction.enable_signature_title")
+    }
+    /// Disable signature auth
+    public static var disable_signature_title: String {
+      localize("sign_transaction.disable_signature_title")
+    }
+    /// Grants full control of the wallet to another key
+    public static var extension_warning: String {
+      localize("sign_transaction.extension_warning")
+    }
+    /// Entire balance
+    public static var entire_balance: String {
+      localize("sign_transaction.entire_balance")
+    }
+    /// Wallet contract will be destroyed
+    public static var destroy_warning: String {
+      localize("sign_transaction.destroy_warning")
+    }
+    /// Unknown operation
+    public static var unknown_operation: String {
+      localize("sign_transaction.unknown_operation")
+    }
+    /// Token
+    public static var token_label: String {
+      localize("sign_transaction.token_label")
+    }
+    /// NFT
+    public static var nft_label: String {
+      localize("sign_transaction.nft_label")
+    }
+    /// Excess to
+    public static var excess_to: String {
+      localize("sign_transaction.excess_to")
+    }
   }
   public enum EmulateTransactionQr {
     /// Scan the QR code to open the transaction emulation

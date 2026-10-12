@@ -35,18 +35,23 @@ final class SignConfirmationViewModelImplementation: SignConfirmationViewModel, 
   var didUpdateHeader: ((String, NSAttributedString?) -> Void)?
   var didUpdateModel: ((SignConfirmationView.Model) -> Void)?
   var didCancel: (() -> Void)?
+
+  private var canSign = false
   
   func viewDidLoad() {
     updateHeader()
     let transactionModel = controller.getTransactionModel(
       sendTitle: SignerLocalize.SignTransaction.send
     )
+    canSign = transactionModel.canSign
     let model = createModel(transactionModel: transactionModel)
     
     didUpdateModel?(model)
   }
   
   func didConfirmTransaction() {
+    // "Not shown -> not signed": refuse to sign anything we could not fully decode.
+    guard canSign else { return }
     let completion: (String?) -> Void = { [weak self] password in
       guard let self else { return }
       if let password {
@@ -107,10 +112,10 @@ private extension SignConfirmationViewModelImplementation {
             ),
             contentConfiguration: TKUIListItemContentView.Configuration(
               leftItemConfiguration: TKUIListItemContentLeftItem.Configuration(
-                title: transactionAction.title.withTextStyle(.label1, color: .Text.primary),
+                title: transactionAction.title.withTextStyle(.label1, color: transactionAction.isDangerous ? .Accent.red : .Text.primary),
                 tagViewModel: nil,
                 subtitle: transactionAction.subtitle?.withTextStyle(.body2, color: .Text.secondary),
-                description: nil
+                description: transactionAction.warning?.withTextStyle(.body2, color: transactionAction.isDangerous ? .Accent.red : .Text.secondary)
               ),
               rightItemConfiguration: TKUIListItemContentRightItem.Configuration(
                 value: transactionAction.value?.withTextStyle(.label1, color: .Text.primary),
@@ -176,7 +181,8 @@ private extension SignConfirmationViewModelImplementation {
     return SignConfirmationView.Model(
       transactionsModel: transactionsModel,
       bocModel: bocModel,
-      auditButtonText: SignerLocalize.SignTransaction.audit_transaction
+      auditButtonText: SignerLocalize.SignTransaction.audit_transaction,
+      isConfirmationEnabled: transactionModel.canSign
     )
   }
 }

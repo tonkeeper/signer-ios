@@ -1,81 +1,86 @@
-import Foundation
-import TonSwift
 import BigInt
+import Foundation
+import SignerLocalize
+import TonSwift
 
 public final class SignConfirmationController {
-  
   public var hexBody: String {
     do {
       let cell = try Cell.cellFromBoc(src: model.body)
-      let hex = try cell.toBoc().hexString()
-      return hex
+      return try cell.toBoc().hexString()
     } catch {
       return ""
     }
   }
-  
+
   public let model: TonSignModel
   public var walletKey: WalletKey
   private let mnemonicsRepository: MnemonicsRepository
   private let deeplinkGenerator: PublishDeeplinkGenerator
   private let amountFormatter: AmountFormatter
-  
-  init(model: TonSignModel,
-       walletKey: WalletKey,
-       mnemonicsRepository: MnemonicsRepository,
-       deeplinkGenerator: PublishDeeplinkGenerator,
-       amountFormatter: AmountFormatter) {
+
+  init(
+    model: TonSignModel,
+    walletKey: WalletKey,
+    mnemonicsRepository: MnemonicsRepository,
+    deeplinkGenerator: PublishDeeplinkGenerator,
+    amountFormatter: AmountFormatter
+  ) {
     self.model = model
     self.walletKey = walletKey
     self.mnemonicsRepository = mnemonicsRepository
     self.deeplinkGenerator = deeplinkGenerator
     self.amountFormatter = amountFormatter
   }
-  
+
   public func getTransactionModel(sendTitle: String) -> TransactionModel {
     do {
-      var transaction: Transaction
-      let version: ContractVersion = {
-        if let version = model.version,
-            let contractVersion = ContractVersion(rawValue: version) {
-          return contractVersion
-        } else {
-          return .currentVersion
-        }
-      }()
-      if version == .v5R1 || version == .v5Beta {
-        transaction = try parseBocV5(model.body)
-      } else {
-        transaction = try parseBoc(model.body)
-      }
-      let transactionModel = createTransactionModel(transaction, sendTitle: sendTitle)
-      return transactionModel
+      // Strict decode: every action that will be signed must be understood and
+      // shown. If anything is left unparsed, we fall through to the catch below,
+      // present an explicit "not recognized" state and block signing.
+      let transaction = try parseSignedBody(model.body, version: contractVersion)
+      let items = transaction.actions.map { makeItem($0, sendTitle: sendTitle) }
+      return TransactionModel(
+        items: items,
+        seqno: transaction.seqno,
+        tonNetwork: model.tonNetwork,
+        boc: model.body.hexString(),
+        canSign: true
+      )
     } catch {
       return TransactionModel(
         items: [TransactionModel.Item(
-          title: "Unknown",
+          title: SignerLocalize.SignTransaction.unrecognized_title,
           subtitle: nil,
           value: nil,
           valueSubtitle: nil,
-          comment: nil
+          comment: nil,
+          warning: SignerLocalize.SignTransaction.unrecognized_warning,
+          isDangerous: true
         )],
         seqno: 0,
-        tonNetwork: nil,
-        boc: model.body.hexString()
+        tonNetwork: model.tonNetwork,
+        boc: model.body.hexString(),
+        canSign: false
       )
     }
   }
-  
+
   public func signTransaction(password: String) async -> URL? {
     do {
+      // Never sign a body we could not fully account for on screen.
+      // This is the crypto-boundary enforcement of "not shown -> not signed";
+      // it holds even if the UI confirmation gate is somehow bypassed.
+      _ = try parseSignedBody(model.body, version: contractVersion)
+
       let mnemonic = try await mnemonicsRepository.getMnemonic(walletKey: walletKey, password: password)
       let keyPair = try TonSwift.Mnemonic.mnemonicToPrivateKey(mnemonicArray: mnemonic.mnemonicWords)
       let privateKey = keyPair.privateKey
       let signer = WalletTransferSecretKeySigner(secretKey: privateKey.data)
-      
+
       let messageCell = try Cell.cellFromBoc(src: model.body)
       let signature = try signer.signMessage(messageCell.hash())
-      
+
       return deeplinkGenerator.generatePublishDeeplink(
         signature: signature,
         return: model.returnURL
@@ -84,33 +89,27 @@ public final class SignConfirmationController {
       return nil
     }
   }
-  
+
   public func createEmulationURL(baseURLProvider: (TonNetwork) -> URL?, seqno: UInt64) -> URL? {
     let tonNetwork = model.tonNetwork ?? .mainnet
     guard let hexBoc = createEmulationHexBoc(seqno: seqno) else { return nil }
-    let url = baseURLProvider(tonNetwork)?.appendingPathComponent(hexBoc)
-    return url
+    return baseURLProvider(tonNetwork)?.appendingPathComponent(hexBoc)
   }
-  
+
   public func createEmulationHexBoc(seqno: UInt64) -> String? {
     let tonNetwork = model.tonNetwork ?? .mainnet
     do {
-      let version: ContractVersion = {
-        if let version = model.version,
-            let contractVersion = ContractVersion(rawValue: version) {
-          return contractVersion
-        } else {
-          return .currentVersion
-        }
-      }()
+      let version = contractVersion
       let contract: WalletContract
       let transferCell: Cell
       switch version {
       case .v5R1:
         contract = WalletV5R1(
           publicKey: model.publicKey.data,
-          walletId: WalletId(networkGlobalId: Int32(tonNetwork.rawValue),
-                             workchain: 0)
+          walletId: WalletId(
+            networkGlobalId: Int32(tonNetwork.rawValue),
+            workchain: 0
+          )
         )
         transferCell = try createEmulationTransferCellV5(body: model.body)
       case .v5Beta:
@@ -135,18 +134,19 @@ public final class SignConfirmationController {
         contract = try WalletV3(workchain: 0, publicKey: model.publicKey.data, revision: .r1)
         transferCell = try createEmulationTransferCell(body: model.body)
       }
-      
-      let externalMessage = Message.external(to: try contract.address(),
-                                             stateInit: seqno == 0 ? contract.stateInit : nil,
-                                             body: transferCell)
+
+      let externalMessage = try Message.external(
+        to: contract.address(),
+        stateInit: seqno == 0 ? contract.stateInit : nil,
+        body: transferCell
+      )
       let cell = try Builder().store(externalMessage).endCell()
-      let hexBoc = try cell.toBoc().hexString()
-      return hexBoc
+      return try cell.toBoc().hexString()
     } catch {
       return nil
     }
   }
-  
+
   private func createEmulationTransferCell(body: Data) throws -> Cell {
     let signer = WalletTransferEmptyKeySigner()
     let messageCell = try Cell.cellFromBoc(src: body).toBuilder()
@@ -156,7 +156,7 @@ public final class SignConfirmationController {
     try body.store(messageCell)
     return try body.endCell()
   }
-  
+
   private func createEmulationTransferCellV5(body: Data) throws -> Cell {
     let signer = WalletTransferEmptyKeySigner()
     let messageCell = try Cell.cellFromBoc(src: body).toBuilder()
@@ -166,175 +166,324 @@ public final class SignConfirmationController {
     try body.store(data: signature)
     return try body.endCell()
   }
-  
-  private func parseBocV5(_ boc: Data) throws -> Transaction {
-    let cell = try Cell.cellFromBoc(src: boc)
-    let hex = boc.hexString()
-    let slice = try cell.toSlice()
-    try slice.skip(64)
-    let seqno = try slice.loadUint(bits: 32)
-    try slice.skip(32) // tx time
-    var transactionItems = [TransactionItem]()
-    
-    var latestTx = try slice.loadRef().toSlice()
-    while latestTx.remainingRefs > 0 {
-      let currentTx = latestTx
-      latestTx = try currentTx.loadRef().toSlice()
-      let messageCell = try currentTx.loadRef().toSlice()
-      
-      let message: MessageRelaxed = try messageCell.loadType()
-      switch message.info {
-      case .internalInfo(let info):
-        guard let transactionItem = try? parseMessage(info: info, bodyCell: message.body) else {
-          continue
-        }
-        transactionItems.append(transactionItem)
-      case .externalOutInfo:
-        continue
-      }
-    }
-    return Transaction(boc: hex, seqno: seqno, items: transactionItems)
 
+  private var contractVersion: ContractVersion {
+    if let version = model.version,
+       let contractVersion = ContractVersion(rawValue: version)
+    {
+      return contractVersion
+    }
+    return .currentVersion
+  }
+}
 
-  }
-  
-  private func parseBoc(_ boc: Data) throws -> Transaction {
-    let cell = try Cell.cellFromBoc(src: boc)
-    let hex = boc.hexString()
-    let slice = try cell.toSlice()
-    try slice.skip(64)
-    let seqno = try slice.loadUint(bits: 32)
-    var transactionItems = [TransactionItem]()
-    while slice.remainingRefs > 0 {
-      let messageCell = try slice.loadRef()
-      let slice = try messageCell.toSlice()
-      let message: MessageRelaxed = try slice.loadType()
-      switch message.info {
-      case .internalInfo(let info):
-        guard let transactionItem = try? parseMessage(info: info, bodyCell: message.body) else {
-          continue
-        }
-        transactionItems.append(transactionItem)
-      case .externalOutInfo:
-        continue
-      }
-    }
-    return Transaction(boc: hex, seqno: seqno, items: transactionItems)
-  }
-  
-  private func parseMessage(info: CommonMsgInfoRelaxedInternal, bodyCell: Cell) throws -> TransactionItem {
-    let messageBody = try parseBody(bodyCell)
-    
-    switch messageBody {
-    case .jettonTransferData(let jettonTransferData):
-      return .sendJetton(
-        address: jettonTransferData.toAddress,
-        jettonAddress: info.dest,
-        amount: jettonTransferData.amount,
-        comment: parseComment(slice: try? jettonTransferData.forwardPayload?.toSlice())
-      )
-    case .nftTransferData(let nftTransferData):
-      return .sendNFT(
-        address: nftTransferData.newOwnerAddress,
-        nftAddress: info.dest,
-        comment: parseComment(slice: try? nftTransferData.forwardPayload?.toSlice())
-      )
-    case .comment(let string):
-      return .sendTon(
-        address: info.dest,
-        amount: info.value.coins.rawValue,
-        comment: string
-      )
-    case nil:
-      return .sendTon(
-        address: info.dest,
-        amount: info.value.coins.rawValue,
-        comment: nil
-      )
-    }
-  }
-  
-  private func parseBody(_ cell: Cell) throws -> InternalMessageBody? {
-    let slice = try cell.toSlice()
-    if let jettonTransferData: JettonTransferData = try? slice.preloadType() {
-      return .jettonTransferData(jettonTransferData)
-    } else if let nftTransferData: NFTTransferData = try? slice.preloadType() {
-      return .nftTransferData(nftTransferData)
-    } else if let comment = parseComment(slice: slice) {
-      return .comment(comment)
-    } else {
-      return nil
-    }
-  }
-    
-  private func parseComment(slice: Slice?) -> String? {
-    return try? slice?.loadSnakeString().trimmingCharacters(in: CharacterSet(["\0"]))
-  }
-  
-  private func createTransactionModel(_ transaction: Transaction, sendTitle: String) -> TransactionModel {
-    
-    let items = transaction.items.map { transactionItem in
-      let subtitle: String
-      let value: String?
-      let valueSubtitle: String?
-      let itemComment: String?
-      
-      switch transactionItem {
-      case .sendTon(let address, let amount, let comment):
-        let formattedAmount = amountFormatter.formatAmount(
-          amount,
-          fractionDigits: 9,
-          maximumFractionDigits: 9,
-          symbol: "TON"
-        )
-        subtitle = address.toShortString(bounceable: false)
-        value = formattedAmount
-        valueSubtitle = nil
-        itemComment = comment
-      case .sendJetton(let address, let jettonAddress, _, let comment):
-        subtitle = address.toShortString(bounceable: false)
-        value = "JETTON"
-        valueSubtitle = jettonAddress.toShortString(bounceable: true)
-        itemComment = comment
-      case .sendNFT(let address, let nftAddress, let comment):
-        subtitle = address.toShortString(bounceable: false)
-        value = "NFT"
-        valueSubtitle = nftAddress.toShortString(bounceable: true)
-        itemComment = comment
-      }
-      
+// MARK: - Display model mapping
+
+private extension SignConfirmationController {
+  func makeItem(_ action: TransferAction, sendTitle: String) -> TransactionModel.Item {
+    switch action {
+    case let .sendMessage(send):
+      return makeSendItem(send, sendTitle: sendTitle)
+    case let .addExtension(address):
       return TransactionModel.Item(
-        title: sendTitle,
-        subtitle: subtitle,
-        value: value,
-        valueSubtitle: valueSubtitle,
-        comment: itemComment
+        title: SignerLocalize.SignTransaction.set_extension_title,
+        subtitle: address.toShortString(bounceable: true),
+        value: nil,
+        valueSubtitle: nil,
+        comment: nil,
+        warning: SignerLocalize.SignTransaction.extension_warning,
+        isDangerous: true
+      )
+    case let .removeExtension(address):
+      return TransactionModel.Item(
+        title: SignerLocalize.SignTransaction.remove_extension_title,
+        subtitle: address.toShortString(bounceable: true),
+        value: nil,
+        valueSubtitle: nil,
+        comment: nil,
+        warning: SignerLocalize.SignTransaction.extension_warning,
+        isDangerous: true
+      )
+    case let .setSignatureAuth(allowed):
+      return TransactionModel.Item(
+        title: allowed
+          ? SignerLocalize.SignTransaction.enable_signature_title
+          : SignerLocalize.SignTransaction.disable_signature_title,
+        subtitle: nil,
+        value: nil,
+        valueSubtitle: nil,
+        comment: nil,
+        warning: SignerLocalize.SignTransaction.extension_warning,
+        isDangerous: true
       )
     }
-    return TransactionModel(
-      items: items,
-      seqno: transaction.seqno,
-      tonNetwork: model.tonNetwork,
-      boc: transaction.boc
+  }
+
+  func makeSendItem(_ send: SendMessageAction, sendTitle: String) -> TransactionModel.Item {
+    let sendsAll = send.sendMode & 128 != 0
+    let destroys = send.sendMode & 32 != 0
+
+    let tonString = amountFormatter.formatAmount(
+      send.tonValue,
+      fractionDigits: 9,
+      maximumFractionDigits: 9,
+      symbol: "TON"
+    )
+    // Always show the native TON that actually leaves the wallet, even for
+    // token / NFT transfers where it used to be hidden behind a label.
+    let value = sendsAll ? SignerLocalize.SignTransaction.entire_balance : tonString
+
+    let subtitle: String?
+    var valueSubtitle: String?
+    var warnings: [String] = []
+
+    switch send.payload {
+    case .ton:
+      subtitle = send.destination.toShortString(bounceable: false)
+    case let .jetton(jettonWallet, _, recipient, excess):
+      subtitle = recipient.toShortString(bounceable: false)
+      valueSubtitle = "\(SignerLocalize.SignTransaction.token_label) · \(jettonWallet.toShortString(bounceable: true))"
+      if let excess {
+        warnings.append("\(SignerLocalize.SignTransaction.excess_to) \(excess.toShortString(bounceable: true))")
+      }
+    case let .nft(nftItem, newOwner, excess):
+      subtitle = newOwner.toShortString(bounceable: false)
+      valueSubtitle = "\(SignerLocalize.SignTransaction.nft_label) · \(nftItem.toShortString(bounceable: true))"
+      if let excess {
+        warnings.append("\(SignerLocalize.SignTransaction.excess_to) \(excess.toShortString(bounceable: true))")
+      }
+    case let .unknown(opCode):
+      subtitle = send.destination.toShortString(bounceable: false)
+      warnings.append("\(SignerLocalize.SignTransaction.unknown_operation) 0x\(String(opCode, radix: 16))")
+    }
+
+    if destroys {
+      warnings.append(SignerLocalize.SignTransaction.destroy_warning)
+    }
+
+    return TransactionModel.Item(
+      title: sendTitle,
+      subtitle: subtitle,
+      value: value,
+      valueSubtitle: valueSubtitle,
+      comment: send.comment,
+      warning: warnings.isEmpty ? nil : warnings.joined(separator: "\n"),
+      isDangerous: destroys || sendsAll
     )
   }
-  
-  enum InternalMessageBody {
-    case jettonTransferData(JettonTransferData)
-    case nftTransferData(NFTTransferData)
-    case comment(String)
+}
+
+// MARK: - Strict signed-body parser
+
+//
+// Developed and verified against the Wallet v3/v4/v5 message layouts (TonSwift's
+// own transfer builders + the canonical wallet-contract-v5 TL-B). The guiding
+// rule is "not shown -> not signed": anything we cannot fully account for makes
+// the whole decode throw, which disables signing.
+
+private extension SignConfirmationController {
+  enum ParseError: Swift.Error {
+    case tooShort
+    case unexpectedExternalOutMessage
+    case unknownOutActionTag(UInt32)
+    case unknownExtendedActionTag(UInt8)
   }
-  
-  enum TransactionItem {
-    case sendTon(address: Address, amount: BigUInt, comment: String?)
-    case sendJetton(address: Address, jettonAddress: Address, amount: BigUInt, comment: String?)
-    case sendNFT(address: Address, nftAddress: Address, comment: String?)
+
+  enum TransferAction {
+    case sendMessage(SendMessageAction)
+    case addExtension(Address)
+    case removeExtension(Address)
+    case setSignatureAuth(Bool)
   }
-  
-  struct Transaction {
-    let boc: String
+
+  struct SendMessageAction {
+    enum Payload {
+      case ton
+      case jetton(jettonWallet: Address, amount: BigUInt, recipient: Address, excess: Address?)
+      case nft(nftItem: Address, newOwner: Address, excess: Address?)
+      case unknown(opCode: UInt32)
+    }
+
+    let destination: Address
+    let tonValue: BigUInt
+    let sendMode: UInt8
+    let payload: Payload
+    let comment: String?
+  }
+
+  struct ParsedTransaction {
     let seqno: UInt64
-    let items: [TransactionItem]
+    let actions: [TransferAction]
+  }
+
+  static let outActionSendMsgTag: UInt32 = 0x0EC3_C86D
+  static let jettonTransferOp: UInt32 = 0xF8A7EA5
+  static let nftTransferOp: UInt32 = 0x5FCC_3D14
+
+  func parseSignedBody(_ boc: Data, version: ContractVersion) throws -> ParsedTransaction {
+    let slice = try Cell.cellFromBoc(src: boc).toSlice()
+    switch version {
+    case .v5R1, .v5Beta:
+      return try parseV5(slice)
+    case .v3R1, .v3R2, .v4R1, .v4R2:
+      return try parseLegacy(slice, hasOrderOpByte: version == .v4R1 || version == .v4R2)
+    }
+  }
+
+  func endParseStrict(_ slice: Slice) throws {
+    try slice.endParse() // throws if any bits or refs remain
+  }
+
+  // w5_signed_request: opcode(32) wallet_id(32) valid_until(32) msg_seqno(32)
+  //                    inner:(out_actions:(Maybe ^OutList) extended_actions:(Maybe W5ExtendedActionList))
+  func parseV5(_ slice: Slice) throws -> ParsedTransaction {
+    guard slice.remainingBits >= 128 else { throw ParseError.tooShort }
+    try slice.skip(32) // opcode (signed internal/external)
+    try slice.skip(32) // wallet_id
+    try slice.skip(32) // valid_until
+    let seqno = try slice.loadUint(bits: 32)
+
+    var actions: [TransferAction] = []
+
+    if try slice.loadBoolean() { // out_actions: Maybe ^OutList
+      try actions.append(contentsOf: parseOutList(slice.loadRef()))
+    }
+    if try slice.loadBoolean() { // extended_actions: Maybe W5ExtendedActionList
+      try parseExtendedActions(startingAt: slice, into: &actions)
+    }
+
+    try endParseStrict(slice)
+    return ParsedTransaction(seqno: seqno, actions: actions)
+  }
+
+  /// out_list_empty$_ = OutList 0;
+  /// out_list$_ prev:^(OutList n) action:OutAction = OutList (n+1);
+  /// action_send_msg#0ec3c86d mode:(## 8) out_msg:^MessageRelaxed = OutAction;
+  func parseOutList(_ cell: Cell) throws -> [TransferAction] {
+    var collected: [TransferAction] = []
+    var node = try cell.toSlice()
+    while node.remainingRefs > 0 {
+      let tag = try UInt32(node.loadUint(bits: 32))
+      guard tag == Self.outActionSendMsgTag else {
+        throw ParseError.unknownOutActionTag(tag)
+      }
+      let mode = try UInt8(node.loadUint(bits: 8))
+      let prev = try node.loadRef()
+      let messageCell = try node.loadRef()
+      try endParseStrict(node)
+      let message = try MessageRelaxed.loadFrom(slice: messageCell.toSlice())
+      try collected.append(.sendMessage(parseMessage(message, sendMode: mode)))
+      node = try prev.toSlice()
+    }
+    try endParseStrict(node) // out_list_empty base
+    return collected.reversed() // list is built inner-last; restore original order
+  }
+
+  /// extended_list_last$_   action:W5ExtendedAction                                = list 0;
+  /// extended_list_action$_ action:W5ExtendedAction prev:^(W5ExtendedActionList n) = list (n+1);
+  func parseExtendedActions(startingAt slice: Slice, into actions: inout [TransferAction]) throws {
+    var node = slice // the first extended action is inline in the inner-request cell
+    while true {
+      try actions.append(parseExtendedAction(node))
+      if node.remainingRefs > 0 {
+        node = try node.loadRef().toSlice()
+      } else {
+        break
+      }
+    }
+    if node !== slice {
+      try endParseStrict(node)
+    }
+  }
+
+  func parseExtendedAction(_ slice: Slice) throws -> TransferAction {
+    let tag = try UInt8(slice.loadUint(bits: 8))
+    switch tag {
+    case 0x02:
+      let address: Address = try slice.loadType()
+      return .addExtension(address)
+    case 0x03:
+      let address: Address = try slice.loadType()
+      return .removeExtension(address)
+    case 0x04:
+      let allowed = try slice.loadBoolean()
+      return .setSignatureAuth(allowed)
+    default:
+      throw ParseError.unknownExtendedActionTag(tag)
+    }
+  }
+
+  // v3: wallet_id(32) valid_until(32) seqno(32)             then per message: mode(8) ^MessageRelaxed
+  // v4: wallet_id(32) valid_until(32) seqno(32) order_op(8) then per message: mode(8) ^MessageRelaxed
+  func parseLegacy(_ slice: Slice, hasOrderOpByte: Bool) throws -> ParsedTransaction {
+    guard slice.remainingBits >= 96 else { throw ParseError.tooShort }
+    try slice.skip(32) // wallet_id / subwallet
+    try slice.skip(32) // valid_until
+    let seqno = try slice.loadUint(bits: 32)
+    if hasOrderOpByte {
+      try slice.skip(8) // op (0 = simple order)
+    }
+
+    var actions: [TransferAction] = []
+    while slice.remainingRefs > 0 {
+      let mode = try UInt8(slice.loadUint(bits: 8))
+      let messageCell = try slice.loadRef()
+      let message = try MessageRelaxed.loadFrom(slice: messageCell.toSlice())
+      try actions.append(.sendMessage(parseMessage(message, sendMode: mode)))
+    }
+    try endParseStrict(slice)
+    return ParsedTransaction(seqno: seqno, actions: actions)
+  }
+
+  func parseMessage(_ message: MessageRelaxed, sendMode: UInt8) throws -> SendMessageAction {
+    guard case let .internalInfo(info) = message.info else {
+      throw ParseError.unexpectedExternalOutMessage
+    }
+    let destination = info.dest
+    let tonValue = info.value.coins.rawValue
+    let opCode = peekOpCode(message.body)
+
+    switch opCode {
+    case Self.jettonTransferOp:
+      if let data = try? JettonTransferData.loadFrom(slice: message.body.toSlice()) {
+        return SendMessageAction(
+          destination: destination,
+          tonValue: tonValue,
+          sendMode: sendMode,
+          payload: .jetton(jettonWallet: destination, amount: data.amount, recipient: data.toAddress, excess: data.responseAddress),
+          comment: parseComment(data.forwardPayload)
+        )
+      }
+      return SendMessageAction(destination: destination, tonValue: tonValue, sendMode: sendMode, payload: .unknown(opCode: Self.jettonTransferOp), comment: nil)
+    case Self.nftTransferOp:
+      if let data = try? NFTTransferData.loadFrom(slice: message.body.toSlice()) {
+        return SendMessageAction(
+          destination: destination,
+          tonValue: tonValue,
+          sendMode: sendMode,
+          payload: .nft(nftItem: destination, newOwner: data.newOwnerAddress, excess: data.responseAddress),
+          comment: parseComment(data.forwardPayload)
+        )
+      }
+      return SendMessageAction(destination: destination, tonValue: tonValue, sendMode: sendMode, payload: .unknown(opCode: Self.nftTransferOp), comment: nil)
+    case let .some(op) where op != 0:
+      return SendMessageAction(destination: destination, tonValue: tonValue, sendMode: sendMode, payload: .unknown(opCode: op), comment: nil)
+    default:
+      return SendMessageAction(destination: destination, tonValue: tonValue, sendMode: sendMode, payload: .ton, comment: parseComment(message.body))
+    }
+  }
+
+  func peekOpCode(_ body: Cell) -> UInt32? {
+    guard let slice = try? body.toSlice(), slice.remainingBits >= 32 else { return nil }
+    guard let op = try? slice.preloadUint(bits: 32) else { return nil }
+    return UInt32(op)
+  }
+
+  func parseComment(_ cell: Cell?) -> String? {
+    guard let cell, let slice = try? cell.toSlice() else { return nil }
+    guard let raw = try? slice.loadSnakeString() else { return nil }
+    let trimmed = raw.trimmingCharacters(in: CharacterSet(["\0"]))
+    return trimmed.isEmpty ? nil : trimmed
   }
 }
 
