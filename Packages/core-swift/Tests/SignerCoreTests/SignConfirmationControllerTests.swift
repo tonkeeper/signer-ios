@@ -70,6 +70,10 @@ final class SignConfirmationControllerTests: XCTestCase {
     XCTAssertEqual(model.items.count, 3)
   }
 
+  func test_legit_v5beta_transfer_is_signable() throws {
+    try assertSignableSingleSend(Bodies.legitV5Beta(to: Address.mock(workchain: 0, seed: "to")), version: "v5beta")
+  }
+
   func test_legit_v4_transfer_is_signable() throws {
     try assertSignableSingleSend(Bodies.legitV4(to: Address.mock(workchain: 0, seed: "to")), version: "v4r2")
   }
@@ -160,6 +164,16 @@ private enum Bodies {
     let contract = WalletV5R1(publicKey: pub, walletId: WalletId(networkGlobalId: mainnetGlobalId))
     return try contract.createTransfer(args: WalletTransferData(
       seqno: 1, messages: to.map { MessageRelaxed.internal(to: $0, value: nanoton) }, sendMode: .walletDefault(), timeout: 0xFFFF_FFFF
+    )).signingMessage.endCell().toBoc()
+  }
+
+  static func legitV5Beta(to: Address, nanoton: BigUInt = BigUInt(1_500_000_000)) throws -> Data {
+    let contract = WalletV5Beta(
+      publicKey: pub,
+      walletId: WalletIdBeta(networkGlobalId: mainnetGlobalId, workchain: 0)
+    )
+    return try contract.createTransfer(args: WalletTransferData(
+      seqno: 1, messages: [MessageRelaxed.internal(to: to, value: nanoton)], sendMode: .walletDefault(), timeout: 0xFFFF_FFFF
     )).signingMessage.endCell().toBoc()
   }
 

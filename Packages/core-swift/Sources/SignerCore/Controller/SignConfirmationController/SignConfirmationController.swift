@@ -287,6 +287,7 @@ private extension SignConfirmationController {
     case unexpectedExternalOutMessage
     case unknownOutActionTag(UInt32)
     case unknownExtendedActionTag(UInt8)
+    case unsupportedV5BetaExtendedActions
   }
 
   enum TransferAction {
@@ -323,8 +324,10 @@ private extension SignConfirmationController {
   func parseSignedBody(_ boc: Data, version: ContractVersion) throws -> ParsedTransaction {
     let slice = try Cell.cellFromBoc(src: boc).toSlice()
     switch version {
-    case .v5R1, .v5Beta:
+    case .v5R1:
       return try parseV5(slice)
+    case .v5Beta:
+      return try parseV5Beta(slice)
     case .v3R1, .v3R2, .v4R1, .v4R2:
       return try parseLegacy(slice, hasOrderOpByte: version == .v4R1 || version == .v4R2)
     }
@@ -352,6 +355,20 @@ private extension SignConfirmationController {
       try parseExtendedActions(startingAt: slice, into: &actions)
     }
 
+    try endParseStrict(slice)
+    return ParsedTransaction(seqno: seqno, actions: actions)
+  }
+
+  // v5beta: opcode(32) wallet_id(80) valid_until(32) msg_seqno(32)
+  //          has_other_actions(1 = false) out_actions:^(OutList)
+  func parseV5Beta(_ slice: Slice) throws -> ParsedTransaction {
+    guard slice.remainingBits >= 177 else { throw ParseError.tooShort }
+    try slice.skip(32) // opcode
+    try slice.skip(80) // network_global_id, workchain, wallet version, subwallet
+    try slice.skip(32) // valid_until
+    let seqno = try slice.loadUint(bits: 32)
+    guard !(try slice.loadBoolean()) else { throw ParseError.unsupportedV5BetaExtendedActions }
+    let actions = try parseOutList(slice.loadRef())
     try endParseStrict(slice)
     return ParsedTransaction(seqno: seqno, actions: actions)
   }
