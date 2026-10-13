@@ -14,7 +14,7 @@
 "app.name" = "Signer";
 
 "onboarding.title" = "Signer";
-"onboarding.caption" = "Безопасное место для хранения ключей и подписи транзакций в Tonkeeper";
+"onboarding.caption" = "Безопасное место для хранения ключей и подписи транзакций в Keeper";
 
 "password.create.title" = "Задайте новый пароль";
 "password.create.textfield.caption" = "Минимум 4 символа";
@@ -34,9 +34,9 @@
 "main.buttons.settings.title" = "Настройки";
 
 "key_details.qr_header.title" = "Подключить на другом устройстве";
-"key_details.qr_header.caption" = "Откройте Tonkeeper » Добавить кошелёк » Подключить Signer";
-"key_details.buttons.export_to_tonkeeper" = "Подключить к Tonkeeper";
-"key_details.buttons.export_to_tonkeeper_web" = "Подключить к Tonkeeper Web";
+"key_details.qr_header.caption" = "Откройте Keeper » Добавить кошелёк » Подключить Signer";
+"key_details.buttons.export_to_tonkeeper" = "Подключить к Keeper";
+"key_details.buttons.export_to_tonkeeper_web" = "Подключить к Keeper Web";
 "key_details.buttons.name" = "Имя";
 "key_details.buttons.hex_address" = "Hex адрес";
 "key_details.buttons.recovery_phrase" = "Секретный ключ";
@@ -75,7 +75,7 @@
 "recovery_input.banner.text" = "Безопаснее создать новый ключ в Signer. Ваш старый ключ мог быть скомпрометирован вами ранее.";
 
 "scanner.title" = "Отсканируйте QR-код";
-"scanner.caption" = "Со страницы подтверждения действия в Tonkeeper";
+"scanner.caption" = "Со страницы подтверждения действия в Keeper";
 
 "camera_permission.title" = "Разрешите доступ к камере, чтобы сканировать QR-коды";
 "camera_permission.button" = "Открыть настройки";
@@ -103,7 +103,7 @@
 "emulate_transaction_qr.title" = "Отсканируйте, чтобы открыть эмуляцию транзакции";
 "emulate_transaction_qr.close_button.title" = "Закрыть";
 
-"sign_transaction_qr.title" = "Отсканируйте QR-код с помощью Tonkeeper";
+"sign_transaction_qr.title" = "Отсканируйте QR-код с помощью Keeper";
 "sign_transaction_qr.caption" = "После сканирования транзакция будет отправлена в сеть.";
 "sign_transaction_qr.signed_transaction" = "Подписанная транзакция";
 "sign_transaction_qr.done" = "Готово";
