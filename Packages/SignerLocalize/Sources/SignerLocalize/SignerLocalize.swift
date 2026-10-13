@@ -54,7 +54,7 @@ public enum SignerLocalize {
     }
   }
   public enum Onboarding {
-    /// The storage place for your keys to sign transactions in Tonkeeper
+    /// The storage place for your keys to sign transactions in Keeper
     public static var caption: String {
       localize("onboarding.caption")
     }
@@ -155,17 +155,17 @@ public enum SignerLocalize {
       public static var title: String {
         localize("key_details.qr_header.title")
       }
-      /// Open Tonkeeper » Add Wallet » Pair Signer
+      /// Open Keeper » Add Wallet » Pair Signer
       public static var caption: String {
         localize("key_details.qr_header.caption")
       }
     }
     public enum Buttons {
-      /// Link with Tonkeeper
+      /// Link with Keeper
       public static var export_to_tonkeeper: String {
         localize("key_details.buttons.export_to_tonkeeper")
       }
-      /// Link with Tonkeeper Web
+      /// Link with Keeper Web
       public static var export_to_tonkeeper_web: String {
         localize("key_details.buttons.export_to_tonkeeper_web")
       }
@@ -330,7 +330,7 @@ public enum SignerLocalize {
     public static var title: String {
       localize("scanner.title")
     }
-    /// From Tonkeeper on the action confirmation page
+    /// From Keeper on the action confirmation page
     public static var caption: String {
       localize("scanner.caption")
     }
@@ -436,7 +436,7 @@ public enum SignerLocalize {
     }
   }
   public enum SignTransactionQr {
-    /// Scan the QR code with Tonkeeper
+    /// Scan the QR code with Keeper
     public static var title: String {
       localize("sign_transaction_qr.title")
     }
