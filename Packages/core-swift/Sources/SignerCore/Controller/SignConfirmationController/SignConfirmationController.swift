@@ -169,7 +169,7 @@ public final class SignConfirmationController {
 
   private var contractVersion: ContractVersion {
     if let version = model.version,
-       let contractVersion = ContractVersion(rawValue: version)
+       let contractVersion = ContractVersion(tonsignValue: version)
     {
       return contractVersion
     }

@@ -23,6 +23,7 @@
 	<array>
 		<string>tonkeeper</string>
 		<string>tonkeeper-pro</string>
+		<string>tonkeeper-mob</string>
 	</array>
 	<key>PrivacyPolicyURL</key>
 	<string>$(PRIVACY_POLICY_URL)</string>
