@@ -82,6 +82,23 @@ final class SignConfirmationControllerTests: XCTestCase {
     try assertSignableSingleSend(Bodies.legitV3(to: Address.mock(workchain: 0, seed: "to")), version: "v3r2")
   }
 
+  // MARK: - Version names Keeper puts into tonsign links
+
+  func test_keeper_w5_transfer_is_signable() throws {
+    try assertSignableSingleSend(Bodies.legitV5(to: Address.mock(workchain: 0, seed: "to")), version: "w5")
+  }
+
+  func test_keeper_w5_beta_link_is_signable() throws {
+    let body = try Bodies.legitV5Beta(to: Address.mock(workchain: 0, seed: "to"))
+    let link = "tonsign://v1/?pk=\(String(repeating: "ab", count: 32))&body=\(body.hexString())&v=w5%20beta&tn=-239&return=tonkeeper%2Dmob%3A%2F%2Fpublish"
+    guard case let .tonsign(.sign(signModel)) = try TonsignDeeplinkParser().parse(string: link) else {
+      return XCTFail("Keeper's link must parse as a sign request")
+    }
+    let model = makeController(model: signModel).getTransactionModel(sendTitle: "Send")
+    XCTAssertTrue(model.canSign, "a W5 beta request from Keeper must stay signable")
+    XCTAssertEqual(model.items.count, 1)
+  }
+
   // MARK: - send_mode and attached-TON vectors
 
   func test_sendMode_128_is_surfaced_as_entire_balance() throws {
@@ -111,15 +128,19 @@ final class SignConfirmationControllerTests: XCTestCase {
   }
 
   private func makeController(body: Data, version: String) -> SignConfirmationController {
+    makeController(model: TonSignModel(
+      publicKey: PublicKey(data: Data(repeating: 0xAB, count: 32)),
+      body: body,
+      returnURL: nil,
+      version: version,
+      network: nil,
+      tonNetwork: .mainnet
+    ))
+  }
+
+  private func makeController(model: TonSignModel) -> SignConfirmationController {
     SignConfirmationController(
-      model: TonSignModel(
-        publicKey: PublicKey(data: Data(repeating: 0xAB, count: 32)),
-        body: body,
-        returnURL: nil,
-        version: version,
-        network: nil,
-        tonNetwork: .mainnet
-      ),
+      model: model,
       walletKey: WalletKey(name: "Test", publicKey: PublicKey(data: Data(repeating: 0xAB, count: 32))),
       mnemonicsRepository: ThrowingMnemonicsRepository(),
       deeplinkGenerator: PublishDeeplinkGenerator(),

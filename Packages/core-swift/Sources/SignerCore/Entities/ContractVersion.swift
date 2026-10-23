@@ -10,4 +10,16 @@ public enum ContractVersion: String, Codable, CaseIterable {
   public static var currentVersion: ContractVersion {
     .v5R1
   }
+
+  /// Keeper names W5 wallets "w5" and "w5 beta" in the `v` parameter of tonsign links
+  public init?(tonsignValue: String) {
+    switch tonsignValue {
+    case "w5":
+      self = .v5R1
+    case "w5 beta":
+      self = .v5Beta
+    default:
+      self.init(rawValue: tonsignValue)
+    }
+  }
 }
